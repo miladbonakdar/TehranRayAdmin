@@ -1,0 +1,32 @@
+{
+  "name": "sepanta",
+  "version": "1.1.0",
+  "description": "sepantarai.com website . iran train organization forume",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masoudrk/PHPForum.git"
+  },
+  "keywords": [
+    "forume"
+  ],
+  "author": "milad bonakdar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/masoudrk/PHPForum/issues"
+  },
+  "homepage": "https://github.com/masoudrk/PHPForum#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-angular-templates": "^1.1.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-htmlmin": "^2.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-ng-annotate": "^3.0.0"
+  }
+}

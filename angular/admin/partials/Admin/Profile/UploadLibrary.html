@@ -1,0 +1,163 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small> کتابخانه</small>
+        آپلود فایل
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">آپلود فایل جدید در کتابخانه</li>
+    </ol>
+</section>
+<style>
+    .file-extension-thumb{
+        width:80px;
+        height: 80px;
+    }
+</style>
+<section class="row">
+    <div class="col-xs-12">
+        <div class="col-xs-12">
+            <div class="box box-success">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font">آپلود فایل جدید در کتابخانه</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body" dir="rtl">
+                    <div class="col-xs-12   text-center form-group">
+                        <span class="btn btn-primary btn-file" >
+            انتخاب فایل (ها)  <input type="file" id="inputFile" ngf-select name="file"
+                                     ngf-max-size="800MB"
+                                     ngf-model-invalid="errorFile" ngf-multiple="true" ngf-keep="'distinct'"
+                                     ng-model="myFiles"
+                                     ngf-change="filesChanged($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                        </span>
+                        <button class="btn btn-success" ng-click="startUploadAll()">شروع آپلود فایل (ها)</button>
+                    </div>
+                    <div class="col-xs-12 no-padding text-center no-padding">
+                        <div ng-repeat="f in myFiles" class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div class="col-xs-12 text-center" style="margin-bottom: 10px" ng-switch="f.type">
+                                        <img ng-switch-when="image/jpeg" ngf-thumbnail="f"
+                                             style="width:80px;height: 80px;"
+                                             class="img-circle" >
+                                        <img ng-switch-when="image/png" ngf-thumbnail="f"
+                                             style="width:80px;height: 80px;"
+                                             class="img-circle" >
+                                        <i ng-switch-when="video/mp4"
+                                           class="fa fa-video-camera fa-5x file-extension-thumb text-muted" ></i>
+                                        <i ng-switch-when="video/avi"
+                                           class="fa fa-video-camera fa-5x file-extension-thumb text-muted" ></i>
+                                        <i ng-switch-when="video/mkv"
+                                           class="fa fa-video-camera fa-5x file-extension-thumb text-muted" ></i>
+                                        <i ng-switch-default
+                                           class="fa fa-file fa-5x file-extension-thumb text-muted" ></i>
+                                    </div>
+                                    <span class="text-center english-font" >
+                                        {{f.name}}<br>
+                                        <span class="palette-pumpkin">{{f.size |fileSizeFilter | pNumber}}</span>
+                                    </span>
+                                    <!--<button type="button" class="close" ng-click="removeFile(f)" aria-hidden="true">×</button>-->
+
+                                    <div class="row" style="margin-top: 5px">
+                                        <span class="col-xs-12 control-label text-right">انجمن مرتبط :</span>
+                                        <div class="col-xs-12">
+                                            <ui-select ng-model="f.MainSubject"
+                                                       ng-disabled="f.uploadState == 0 || f.uploadState == 1"
+                                                       theme="bootstrap"
+                                                       title="انتخاب نشده ..." style="margin-top: 5px"
+                                                       on-select="subjectChanged(f)">
+                                                <ui-select-match placeholder="انتخاب نشده ...">{{$select.selected.Title}}</ui-select-match>
+                                                <ui-select-choices
+                                                        repeat="t in pageData.ForumMainSubjects track by t.SubjectID" >
+                                                    <div ng-bind="t.Title" class="text-right"></div>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row"  style="margin-top: 5px">
+                                        <span class="col-xs-12 control-label text-right">موضوع مرتبط :</span>
+                                        <div class="col-xs-12">
+                                            <ui-select ng-model="f.Subject"
+                                                       ng-disabled="f.uploadState == 0 || f.uploadState == 1"
+                                                       theme="bootstrap"
+                                                       title="انتخاب نشده ..." style="margin-top: 5px">
+                                                <ui-select-match placeholder="انتخاب نشده ...">{{$select.selected.Title}}</ui-select-match>
+                                                <ui-select-choices repeat="t in f.allChildSubjects track by t.ID" >
+                                                    <div ng-bind="t.Title" class="text-right"></div>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                    <div class="row"  style="margin-top: 5px">
+                                        <span class="col-xs-12 control-label text-right">تگ فایل :</span>
+                                        <div class="col-xs-12">
+                                            <ui-select multiple ng-model="f.Tags" theme="bootstrap" sortable="true" close-on-select="false" style="">
+                                                <ui-select-match placeholder="انتخاب نشده ... ">{{$item.Text}}</ui-select-match>
+                                                <ui-select-choices
+                                                        repeat="t in allTags | filter: {Text: $select.search}">
+                                                    <div compile="t.Text" class="text-right"></div>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 15px;">
+                                        <input class="form-control" placeholder="موضوع ..."
+                                                  ng-disabled="f.uploadState == 0 || f.uploadState == 1"
+                                                  ng-model="f.Title">
+                                    </div>
+                                    <div style="margin-top: 15px;">
+                                        <textarea class="form-control" rows="3" placeholder="توضیحات ..."
+                                                  style=" resize: none;"
+                                                  ng-disabled="f.uploadState == 0 || f.uploadState == 1"
+                                                  ng-model="f.Description"></textarea>
+                                    </div>
+
+                                    <!--data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left"-->
+                                    <!--title="f.uploadState"-->
+                                    <!--tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"-->
+                                    <div style="margin-top: 10px">
+
+                                        <div class="progress progress-sm" style="width:80%;float:left;margin-top: 6px;"
+                                            ng-class="(f.uploadState == 0)? 'active':''">
+                                            <div class="progress-bar"
+                                                 role="progressbar" aria-valuenow="20" aria-valuemin="0"
+                                                 aria-valuemax="100" style="width: {{f.percent}}%"
+                                                ng-class="(f.uploadState == 0)?'progress-bar-striped progress-bar-warning'
+                                                :' progress-bar-success'">
+                                            </div>
+                                        </div>
+                                        <div style="width: 20%;position: absolute; float:right;text-align: right">
+                                            {{f.percent || '0' | pNumber}}<span class="english-font">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 no-padding" ng-hide="f.uploadState == 1" style="margin-top:
+                                    10px">
+                                        <div class="pull-left">
+                                            <i class="fa fa-stop fa-2x palette-alizarin link"
+                                               ng-click="removeFile(f)"></i>
+                                            <i class="fa fa-play fa-2x palette-nephritis link"
+                                               ng-click="startUploadFile(f)"
+                                               style="margin-right: 5px"
+                                               ng-hide="f.uploadState == 0"></i>
+                                        </div>
+                                        <div class="pull-right" style="margin-top: 3px">
+                                            {{f.loaded}}
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12" ng-hide="f.uploadState != 1" style="margin-top: 20px">
+                                        با موفقیت آپلود شد!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>
+
+
+

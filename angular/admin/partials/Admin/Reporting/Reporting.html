@@ -1,0 +1,94 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small>پیام</small>
+        مدیریت
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">گزارش</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title"> فیلتر</h3>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body text-right persian-rtl">
+                    <div class="form-group col-sm-6">
+                        <div class="col-sm-8">
+                            <ui-select ng-model="Forum.selected" on-select="changeForum()" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match allow-clear placeholder="انجمن">{{Forum.selected.Title}}</ui-select-match>
+                                <ui-select-choices repeat="edu in Forums">
+                                    <div compile="edu.Title | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <label class="col-sm-4 control-label">انجمن</label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="col-sm-8">
+                            <ui-select ng-model="Position.selected" on-select="changePosition()" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match allow-clear placeholder="منطقه">{{Position.selected.OrganizationName}}</ui-select-match>
+                                <ui-select-choices repeat="edu in allPositions">
+                                    <div compile="edu.OrganizationName | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <label class="col-sm-4 control-label">ناحیه</label>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /. box -->
+        </div>
+        <!-- /.col -->
+        <div class="row no-padding">
+            <div class="col-xs-12">
+                <div class="col-md-3 col-sm-6 col-xs-12" ng-repeat="u in users" >
+                    <!-- Widget: user widget style 1 -->
+                    <div class="box box-widget widget-user-2">
+                        <!-- Add the bg color to the header using any of the bg-* classes -->
+                        <div class="widget-user-header" ng-class="getBGColor(u.OrganID)">
+                            <div class="widget-user-image">
+                                <img class="img-circle"  ng-src="{{u.FullPath || '../images/Avatar.jpg'}}" alt="User Avatar">
+                            </div>
+                            <!-- /.widget-user-image -->
+                            <h5 class="widget-user-desc">{{u.FullName |subString :15 |pNumber}}</h5>
+                            <h6 class="widget-user-desc">{{u.OrganizationName|pNumber}}</h6>
+                        </div>
+                        <div class="box-footer no-padding">
+                            <ul class="nav nav-stacked">
+                                <li><a >امتیاز <span class="pull-left badge bg-blue">{{u.score|pNumber}}</span></a></li>
+                                <li><a >تعداد جواب ها<span class="pull-left badge bg-aqua">{{u.AnswerCount|pNumber}}</span></a></li>
+                                <li><a >تعداد سوالات<span class="pull-left badge bg-green">{{u.QuestionCount|pNumber}}</span></a></li>
+                                <li><a >دنبال کنندگان<span class="pull-left badge bg-red">{{u.FollowersCount|pNumber}}</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /.widget-user -->
+                </div>
+                <div class="text-center">
+                    <auto-paging page="1"
+                                 page-size="20"
+                                 ul-class="pagination pagination-sm no-margin"
+                                 action-name="getUsersReport"
+                                 data-params="pagingParams"
+                                 total-items="allTotal"
+                                 ng-control="pagingController"
+                                 items="users">
+                    </auto-paging>
+                </div>
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+</section>
+
+
+
