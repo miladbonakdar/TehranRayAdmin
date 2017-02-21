@@ -37,7 +37,7 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
                 }
             }
         }).state("profile", {
-            url: "/profile",
+            url: "/profile/:action",
             templateUrl: "angular.partial.Profile.html",
             controller: 'ProfileCtrl',
             resolve: {
@@ -470,7 +470,7 @@ app.factory("Extention", ['$http', '$timeout', '$rootScope', '$state', '$statePa
             });
         }
 
-        $rootScope.session = session;
+        $rootScope.user = session;
 
         $rootScope.spinner = {};
         var obj = {};
@@ -990,398 +990,311 @@ angular.module(appName).controller('AdminCtrl', ['$scope', '$rootScope', '$route
 
 }]);
 angular.module(appName).controller('DashboardCtrl', ['$scope', 'ADMdtpConvertor', '$rootScope', 'Extention', '$state', '$timeout', function ($scope, ADMdtpConvertor, $rootScope, Extention, $state, $timeout) {
-
-    $scope.newQuestionsDigram = {};
-    $scope.provinceDigram = {};
-
-    $scope.incrementChartOptions =[{
-        id:"g1",
-        type : "smoothedLine",
-        lineColor: "#00BBCC",
-        valueField: "IQuestionCount",
-        fillColors: "#00BBCC",
-        fillAlphas:0.2,
-        bullet: "round",
-        bulletColor: "#FFFFFF",
-        bulletBorderAlpha : 1,
-        bulletBorderThickness : 2,
-        bulletSize : 7,
-        useLineColorForBulletBorder : true,
-        lineThickness : 2,
-        balloon:{
-            drop:false
-        },
-        balloonFunction : function (graphDataItem, graph){
-            var value = graphDataItem.values.value;
-            var date = moment(graphDataItem.category);
-            var d =  date.format('jYYYY/jMM/jDD');
-
-            return "<b style=\"font-size: 13px\">" +
-                persianJs( value + " سوال <br>" +'<span class="text-muted">'+
-                    d + '</span>').englishNumber().toString() + "</b>";
-        }
-    },
-        {
-            id:"g2",
-            type : "smoothedLine",
-            lineColor: "#e74c3c",
-            valueField: "IAnswerCount",
-            fillColors: "#e74c3c",
-            fillAlphas:0.2,
-            bullet: "round",
-            bulletColor: "#FFFFFF",
-            bulletBorderAlpha : 1,
-            bulletBorderThickness : 2,
-            bulletSize : 7,
-            useLineColorForBulletBorder : true,
-            lineThickness : 2,
-            balloon:{
-                drop:false
-            },
-            balloonFunction : function (graphDataItem, graph){
-                var value = graphDataItem.values.value;
-                var date = moment(graphDataItem.category);
-                var d =  date.format('jYYYY/jMM/jDD');
-
-                return "<b style=\"font-size: 13px\">" +
-                    persianJs( value + " جواب <br>" +'<span class="text-muted">'+
-                        d + '</span>').englishNumber().toString() + "</b>";
-            }
-        }
-    ];
-
-    $scope.dailyChartOptions =[{
-        id:"g1",
-        type : "smoothedLine",
-        lineColor: "#00BBCC",
-        valueField: "QuestionCount",
-        fillColors: "#00BBCC",
-        bullet: "round",
-        bulletColor: "#FFFFFF",
-        bulletBorderAlpha : 1,
-        bulletBorderThickness : 2,
-        bulletSize : 7,
-        useLineColorForBulletBorder : true,
-        lineThickness : 2,
-        classNameField:"classNameQ",
-        balloon:{
-            drop:false
-        },
-        balloonFunction : function (graphDataItem, graph){
-            var value = graphDataItem.values.value;
-            var date = moment(graphDataItem.category);
-            var d =  date.format('jYYYY/jMM/jDD');
-
-            return "<b style=\"font-size: 13px\">" +
-                persianJs( value + " سوال <br>" +'<span class="text-muted">'+
-                    d + '</span>').englishNumber().toString() + "</b>";
-        }
-    },
-        {
-            id:"g2",
-            type : "smoothedLine",
-            lineColor: "#e74c3c",
-            valueField: "AnswerCount",
-            fillColors: "#e74c3c",
-            bullet: "round",
-            bulletColor: "#FFFFFF",
-            bulletBorderAlpha : 1,
-            bulletBorderThickness : 2,
-            bulletSize : 7,
-            useLineColorForBulletBorder : true,
-            lineThickness : 2,
-            classNameField:"classNameA",
-            balloon:{
-                drop:false
-            },
-            balloonFunction : function (graphDataItem, graph){
-                var value = graphDataItem.values.value;
-                var date = moment(graphDataItem.category);
-                var d =  date.format('jYYYY/jMM/jDD');
-
-                return "<b style=\"font-size: 13px\">" +
-                    persianJs( value + " جواب <br>" +'<span class="text-muted">'+
-                        d + '</span>').englishNumber().toString() + "</b>";
-            }
-        }
-    ];
-
-    $scope.radarChartGraphs = [{
-
-        valueField: "QTotal",
-
-        bullet: "round",
-        balloonFunction : function (graphDataItem, graph){
-            var value = graphDataItem.values.value;
-
-            return "<span style=\"font-size: 13px\">" +
-                persianJs( " سوال" + value ).englishNumber().toString() + "</span>";
-        }
-    },{
-
-        valueField: "ATotal",
-
-        bullet: "round",
-        balloonFunction : function (graphDataItem, graph){
-            var value = graphDataItem.values.value;
-
-            return "<span style=\"font-size: 13px\">" +
-                persianJs( " جواب" + value ).englishNumber().toString() + "</span>";
-        }
-    }];
-
-    $scope.stackChartOptions = [{
-        "fillAlphas": 0.8,
-        "lineAlpha": 0.2,
-        "type": "column",
-        "valueField": "QTotal",
-        "labelText": "[[value]]",
-        "clustered": false,
-        "labelFunction": function(item) {
-            return persianJs( item.values.value.toString() ).englishNumber().toString();
-        },
-        "balloonFunction": function(item) {
-            return "<b style=\"font-size: 15px\">" +
-                persianJs( item.category ).englishNumber().toString()
-                + "</b><br><span class='pull-right' style='font-size=15px'> &nbsp;" +
-                persianJs( item.values.value.toString() ).englishNumber().toString()
-                + "</span><span style='font-size=15px'>" + 'سوال' + "</span>" ;
-        }
-    }, {
-        "fillAlphas": 0.8,
-        "lineAlpha": 0.2,
-        "type": "column",
-        "valueField": "ATotal",
-        "labelText": "[[value]]",
-        "clustered": false,
-        "labelFunction": function(item) {
-            return persianJs( (-item.values.value).toString() ).englishNumber().toString();
-        },
-        "balloonFunction": function(item) {
-            return "<b style=\"font-size: 15px;\">" +
-                persianJs( item.category ).englishNumber().toString()
-                + "</b><br><span class='pull-right' style='font-size=15px'> &nbsp;" +
-                persianJs( (-item.values.value).toString() ).englishNumber().toString()
-                + "</span><span style='font-size=15px'>" + 'جواب' + "</span>" ; ;
-        }
-    }, {
-        "fillAlphas": 1,
-        "lineAlpha": 0.0,
-        "type": "column",
-        "valueField": "ATotalNA",
-        "labelText": "[[value]]",
-        "clustered": false,
-        "labelFunction": function(item) {
-            return persianJs( (-item.values.value).toString() ).englishNumber().toString();
-        },
-        "balloonFunction": function(item) {
-            var s ="<b style=\"font-size: 15px\">" +
-                persianJs( item.category ).englishNumber().toString()
-                + "</b><br><span class='pull-right' style='font-size=15px'> &nbsp;" +
-                persianJs( (-item.values.value).toString() ).englishNumber().toString()
-                + "</span><span style='font-size=15px'>" + 'جواب تایید نشده' + "</span>" ;
-
-            return s;
-        }
-    }, {
-        "fillAlphas": 1,
-        "lineAlpha": 0.0,
-        "type": "column",
-        "valueField": "QTotalNA",
-        "labelText": "[[value]]",
-        "clustered": false,
-        "labelFunction": function(item) {
-            return persianJs( item.values.value.toString() ).englishNumber().toString();
-        },
-        "balloonFunction": function(item) {
-            return "<b style=\"font-size: 15px\">" +
-                persianJs( item.category ).englishNumber().toString()
-                + "</b><br><span class='pull-right' style='font-size=15px'> &nbsp;" +
-                persianJs( item.values.value.toString() ).englishNumber().toString()
-                + "</span><span style='font-size=15px'>" + 'سوال تایید نشده' + "</span>" ;
-        }
-    }];
-
-    var convertDateToISO = function (inputFullDate) {
-        if (inputFullDate.calType == "jalali") {
-            var t = ADMdtpConvertor.toGregorian(inputFullDate.year, inputFullDate.month, inputFullDate.day);
-
-            return t.year + '-' + format(t.month) + '-' + format(t.day) + ' ' +
-                format(inputFullDate.hour) + ':' + format(inputFullDate.minute);
-        } else {
-            return inputFullDate.year + '-' + format(inputFullDate.month) + '-' + format(inputFullDate.day) + ' ' +
-                format(inputFullDate.hour) + ':' + format(inputFullDate.minute);
-        }
-    }
-    var format = function (input) {
-        return ((input < 10) ? '0' + input : input);
-    }
-
-    $scope.updateNewQuestionDiagram = function () {
-        $timeout(function () {
-            var data = {};
-
-            if(angular.isDefined($scope.newQuestionsDigram.MainSubject))
-                data.MainSubjectID = $scope.newQuestionsDigram.MainSubject.ID;
-
-            if(angular.isDefined($scope.newQuestionsDigram.Organization))
-                data.OrganizationID = $scope.newQuestionsDigram.Organization.ID;
-
-            if(angular.isDefined($scope.newQuestionsDigram.to) && $scope.newQuestionsDigram.to != "")
-                data.toDate = convertDateToISO($scope.newQuestionsDigram.toFull);
-
-            if(angular.isDefined($scope.newQuestionsDigram.from) && $scope.newQuestionsDigram.from != "")
-                data.fromDate = convertDateToISO($scope.newQuestionsDigram.fromFull);
-
-            Extention.post('getNewQuestionsGraphData',data).then(function (res) {
-                $scope.dashboardData.ChartData = res;
-            });
-
+    $scope.getStone = function () {
+        Extention.post('getStone',{}).then(function (res) {
+        console.log(res);
         });
     }
-/*
-    $scope.caclulateScores = function () {
-        Extention.post('calculateUsersScore').then(function (res) {
+    activeElement('#SDashboard');
+}]);
+
+angular.module(appName).controller('ProfileCtrl', ['$scope', '$rootScope', '$stateParams', '$state', '$uibModal', '$timeout', 'Extention', 'Upload', function ($scope, $rootScope, $stateParams, $state, $uibModal,$timeout, Extention,Upload) {
+
+    $scope.onChangeAvatar = function ($files, $file) {
+        if($files.length == 0)
+            return;
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'cropModal.html',
+            controller: ['$scope', '$uibModalInstance', 'file', function ($scope , $uibModalInstance , file) {
+                $scope.croppedImage = {};
+
+                $scope.cancel = function () {
+                    $uibModalInstance.dismiss();
+                };
+
+                if(file != null){
+
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        $scope.$apply(function($scope){
+                            $scope.myImage = evt.target.result;
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+
+                $scope.changeAvatar = function () {
+                    Extention.setBusy(true);
+
+                    var dataURItoBlob = function(dataURI) {
+                        var binary = atob(dataURI.split(',')[1]);
+                        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                        var array = [];
+                        for(var i = 0; i < binary.length; i++) {
+                            array.push(binary.charCodeAt(i));
+                        }
+                        return new Blob([new Uint8Array(array)], {type: mimeString});
+                    };
+
+                    var file = dataURItoBlob($scope.croppedImage);
+                    file.name = 'cropfile.png';
+                    file.upload = Upload.upload({
+                        url: serviceBaseURL + 'updateAvatar',
+                        data: {
+                            file: file
+                        }
+                    });
+
+                    $scope.uploading = true;
+                    Extention.popInfo('لطفا تا پایان تغییر تصویر صبر کنید.');
+
+                    file.upload.then(function (response) {
+                        $timeout(function () {
+                            Extention.popSuccess('تصویر با موفقیت تغییر کرد!');
+                            //$scope.myWatcher =$scope.addWatcherForFileChanges();
+                            Extention.setBusy(false);
+                            session.Image = response.data.Image;
+                            $rootScope.user.Image = response.data.Image;
+                            $state.go('profile', {}, {reload: true});
+                            $uibModalInstance.dismiss();
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            Extention.popError('مشکل در تغییر تصویر پروفایل');
+                        }else{
+                            Extention.popSuccess('تصویر با موفقیت تغییر کرد!');
+                        }
+                        //$scope.myWatcher =$scope.addWatcherForFileChanges();
+                        Extention.setBusy(false);
+                        $state.go('profile', {}, {reload: true});
+
+                    }, function (evt) {
+                        // Math.min is to fix IE which reports 200% sometimes
+                        file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+                    });
+                }
+
+            }],
+            size: 'md',
+            resolve: {
+                file: function () {
+                    return $file;
+                }
+            }
+        });
+    }
+
+
+    $scope.timelinePagingController = {};
+
+    if(!$stateParams.action){
+        $scope.activeTab = 2;
+    }else{
+        switch ($stateParams.action){
+            case 'Sessions':
+                $scope.activeTab = 1;
+                break;
+            case 'Info':
+                $scope.activeTab = 2;
+                break;
+        }
+    }
+
+    $scope.bgColorArray= ["bg-aqua-active",
+        "bg-blue-active","bg-green-active",
+        "bg-yellow-active","bg-maroon-active","bg-light-blue-active",
+        "bg-green","bg-orange","bg-purple","bg-red",
+        "bg-yellow","bg-light-blue"];
+
+    $scope.getRandomColorClass = function(id){
+        var i = id % $scope.bgColorArray.length;
+        return $scope.bgColorArray[i];
+    }
+
+    $scope.getIconClass= function (item){
+        switch (item.EventTypeID){
+            // ثبت نام
+            case '-1':
+                return 'fa-user-plus ipalette-bg-sun-flower';
+            // <tr><td>1</td><td>به جواب شما امتیاز مثبت داد.</td></tr>
+            case '1':
+            // <tr><td>2</td><td>به سوال شما امتیاز مثبت داد.</td></tr>
+            case '2':
+                return 'fa-star ipalette-bg-sun-flower';
+
+            // <tr><td>3</td><td>سوال شما را تایید کرد.</td></tr>
+            case '3':
+                return 'fa-check ipalette-bg-peter-river';
+
+            // <tr><td>4</td><td>سوال جدید مطرح کرده.</td></tr>
+            case '4':
+                return 'fa-flask  ipalette-bg-pomegranate';
+
+            // <tr><td>5</td><td>پیام جدید برای شما ارسال کرد.</td></tr>
+            case '5':
+                return 'fa-envelope  ipalette-bg-pumpkin';
+
+            // <tr><td>6</td><td>سوال شما را دنبال کرد.</td></tr>
+            case '6':
+                return 'fa-user  ipalette-bg-emerald';
+
+            // <tr><td>7</td><td>فعالیت شما را پیگیر می شود.</td></tr>
+            case '7':
+                return 'fa-eye ipalette-bg-pomegranate';
+
+            // <tr><td>8</td><td>به سوال شما جواب داده است.</td></tr>
+            case '8':
+                return 'fa-hand-pointer-o ipalette-bg-alizarin';
+
+            // <tr><td>9</td><td>جواب جدید ، برای سوال دنبال شده شما ثبت کرده است.</td></tr>
+            case '9':
+                return 'fa-comments ipalette-bg-amethyst';
+
+            // <tr><td>10</td><td>جواب شما را تایید کرد.</td></tr>
+            case '10':
+                return 'fa-check ipalette-bg-green-sea';
+
+            // <tr><td>11</td><td>سوال جدید برای موضوع دنبال شده شما ارسال کرد.</td></tr>
+            case '11':
+                return 'fa-flask ipalette-bg-orange';
+            default :
+                return 'fa-clone ipalette-bg-orange';
+        }
+    }
+
+    $scope.getTab= function (tabId) {
+        $scope.activeTab = tabId;
+        var opt = {
+            location: true,
+            inherit: true,
+            relative: $state.$current,
+            notify: false
+        };
+        switch ($scope.activeTab){
+            case 1:
+                $state.transitionTo('profile', {action: 'Sessions'}, opt );
+                break;
+            case 2:
+                $state.transitionTo('profile', {action:'Info'}, opt);
+                break;
+        }
+    }
+
+    $scope.isEqualWithVerify = true;
+
+    $scope.getUser = function () {
+
+        Extention.post('getUserProfile').then(function (res) {
+            $scope.curUser = res;
             console.log(res);
         });
     }
-    */
-    Extention.post('getDashboardData').then(function (res) {
-        res.MainSubjects.splice(0, 0, {ID : -1 , Title : 'همه انجمن ها'});
-        res.Organs.splice(0, 0, {ID : -1 , OrganizationName : 'همه ناحیه ها'});
-        $scope.dashboardData = res;
-    });
+    $scope.getUser();
+
+    $scope.getRandomSpan = function(){
+        var i = Math.floor((Math.random()*6)+1);
+
+        switch (i){
+            case 1:
+                return 'danger';
+            case 2:
+                return 'success';
+            case 3:
+                return 'info';
+            case 4:
+                return 'warning';
+            case 5:
+                return 'primary';
+        }
+    }
+    
+    $scope.saveUserInfo = function () {
+
+        if($scope.curUser.Password && ($scope.curUser.VerifyPassword != $scope.curUser.Password) ||
+            $scope.curUser.VerifyPassword && ($scope.curUser.VerifyPassword != $scope.curUser.Password) )
+        {
+            Extention.popError('رمز وارد شده با تکرار آن یکسان نیست!');
+            return;
+        }
+
+        if($scope.curUser.Password && $scope.curUser.Password.length < 5 )
+        {
+            Extention.popError(persianJs('رمز جدید بایستی حداقل 5 کاراکتر باشد!').englishNumber().toString() );
+            return;
+        }
+
+        Extention.post('saveUserInfo', $scope.curUser).then(function (res) {
+
+            if(res && res.Status=='success'){
+                Extention.popSuccess('با موفقیت تغییر کرد!');
+                session.FullName = res.FullName;
+                $rootScope.user.FullName = res.FullName;
+                $scope.curUser.Password=undefined;
+                $scope.curUser.VerifyPassword=undefined;
+                $scope.curUser.OldPassword=undefined;
+            }else{
+                if(res.Message == 'EmailExists'){
+                    Extention.popWarning('خطا : این ایمیل قبلا ثبت شده ، لطفا ایمیل دیگری انتخاب کنید.',12000);
+                }else if(res.Message == 'OldPasswordIsNotValid'){
+                    Extention.popError('خطا : رمز عبور فعلی اشتباه است.');
+                }else if(res.Message == 'PasswordIsNotValid'){
+                    Extention.popError(persianJs('خطا : رمز عبور جدید بایستی حداقل 5 کاراکتر باشد.').englishNumber().toString());
+                }else {
+                    Extention.popError('مشکل در تغییر اطلاعات ، لطفا دوباره تلاش کنید.');
+                }
+            }
+        });
+    }
+
+    $scope.saveUserAddintionalInfo = function () {
+        Extention.post('saveUserAddintionalInfo', $scope.curUser).then(function (res) {
+            if(res && res.Status=='success'){
+                Extention.popSuccess('با موفقیت تغییر کرد!');
+            }else{
+                Extention.popError('مشکل در تغییر اطلاعات ، لطفا دوباره تلاش کنید.');
+            }
+        });
+    }
 
 
-    activeElement('#SDashboard');
-}]);
-angular.module(appName).controller('UploadLibraryCtrl', ['$scope', '$rootScope', '$state', '$timeout', 'Extention', 'Upload', function ($scope, $rootScope, $state, $timeout, Extention , Upload) {
+    $scope.passwordChanged = function () {
+        if(!$scope.curUser.Password && !$scope.curUser.VerifyPassword)
+        {
+            $scope.isEqualWithVerify = true;
+            return;
+        }
+        $scope.isEqualWithVerify = $scope.curUser.VerifyPassword == $scope.curUser.Password;
+    }
 
-	$scope.allTags = [];
-	// uploading -> 0
-	// uploaded -> 1
-	// upload_error -> 2
+    $scope.randomClass= ['danger','info','success','warning'];
+    $scope.randomColor = function (id) {
+        return $scope.randomClass[id % $scope.randomClass.length];
+    }
 
-	Extention.post('getAllTags').then(function (res) {
-		$scope.allTags = res.Items;
-	});
-	$scope.isResumeSupported = Upload.isResumeSupported();
+    $scope.removeSession= function (id) {
+        Extention.post('deleteSession',{UserSessionID : id}).then(function (res) {
 
-	Extention.post('getUploadLibraryData').then(function (res) {
-		$scope.pageData = res;
-	});
+            if(res){
+                if (res.Status=='success') {
+                    Extention.popSuccess('اتصال با موفقیت قطع شد.');
+                    $scope.getUser();
+                }
+                else if(res.Message == 'CurrentSession'){
+                    Extention.popInfo('مشکل در قطع اتصال ، شما با این شناسه متصل هستید!');
+                }
+                else {
+                    Extention.popError('مشکل در قطع اتصال ، لطفا دوباره تلاش کنید.');
+                }
+            }else {
+                Extention.popError('مشکل در قطع اتصال ، لطفا دوباره تلاش کنید.');
+            }
+        });
+    }
 
-	$scope.subjectChanged = function (file) {
-
-		file.allChildSubjects = undefined;
-		file.Subject = undefined;
-		$timeout(function () {
-			file.allChildSubjects = file.MainSubject.Childs;
-		});
-	};
-
-	$scope.togglePauseUploadFile = function (file) {
-		file.uploader.pause();
-	};
-
-	$scope.removeFile = function (file) {
-		if(file.uploadState == 0){
-			file.uploader.abort();
-			file.percent = '0';
-		}else{
-			var index = $scope.myFiles.indexOf(file);
-			$scope.myFiles.splice(index,1);
-		}
-	};
-	
-	$scope.startUploadAll = function () {
-
-		if($scope.myFiles && $scope.myFiles.length){
-			var fileCancel = 0;
-			for (var i = 0; i < $scope.myFiles.length; i++) {
-				var file = $scope.myFiles[i];
-
-				if(file.uploadState == 1){
-					fileCancel++;
-					continue;
-				}
-
-				$scope.startUploadFile(file);
-			}
-
-			if(fileCancel == $scope.myFiles.length){
-				Extention.popInfo('تمامی فایل ها آپلود شده اند!');
-			}
-		}else{
-			Extention.popInfo('هیچ فایلی برای آپلود انتخاب نشده!');
-		}
-
-	}
-
-	$scope.startUploadFile = function (file) {
-
-		if(file.uploadState == 0)
-			return;
-
-		file.uploadState = 0;
-
-		var subjectID = undefined;
-		var mainSubjectID = undefined;
-
-		if(angular.isDefined(file.MainSubject)){
-			mainSubjectID = file.MainSubject.SubjectID;
-		}
-
-		if(angular.isDefined(file.Subject)){
-			subjectID = file.Subject.ID;
-		}
-console.log({file: file , Description : file.Description ,
-	SubjectID : subjectID, MainSubjectID :mainSubjectID,
-	Title : file.Title , Tags : file.Tags
-});
-		file.uploader = Upload.upload({
-			url: uploadURL + 'upload_library.php',
-			data: {file: file , Description : file.Description ,
-				SubjectID : subjectID, MainSubjectID :mainSubjectID,
-				Title : file.Title , Tags : file.Tags
-			}
-		});
-
-		file.uploader.then(function (resp) {
-			resp.config.data.file.uploadState = 1;
-			console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-		}, function (resp) {
-			resp.config.data.file.uploadState = 2;
-			if(resp.status == -1)
-				resp.config.data.file.percent = 0;
-			console.log('Error status: ' + resp.status);
-		}, function (evt) {
-			var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-			evt.config.data.file.percent = progressPercentage;
-			evt.config.data.file.loaded = $scope.sizeFilter(evt.loaded);
-			//console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-		});
-	}
-
-	var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PT'];
-
-	$scope.sizeFilter = function(bytes) {
-
-		var number = Math.floor(Math.log(bytes) / Math.log(1024));
-		return persianJs((bytes / Math.pow(1024, Math.floor(number))).toFixed(1)).englishNumber().toString() +
-			' ' + units[number] ;
-	}
-
-	$scope.abortUpload = function (file) {
-		file.uploader.abort();
-	}
-
-	$scope.isImageFormat = function (type) {
-		var i = type.indexOf('image');
-		return i > -1;
-	}
-
-	activeElement('#SLibrary', '#SUpload');
+    activeElement('#SProfile');
 }]);
 
 angular.module(appName).controller('ReportingCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$stateParams', '$uibModal', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, $stateParams, $uibModal, Extention) {
@@ -1616,19 +1529,20 @@ console.log({file: file , Description : file.Description ,
 	activeElement('#SLibrary', '#SUpload');
 }]);
 
-angular.module(appName).controller('TagCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention) {
+angular.module(appName).controller('StoneTypesCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention) {
     $scope.pagingParams = {};
 	$scope.pagingController = {};
-
+	$scope.stoneType ={};
+    $scope.editMode = false;
 	$scope.search = function () {
 		$scope.pagingController.update();
 	}
 
-	$scope.insertTag= function() {
-	    if ($scope.tagName) {
-	        Extention.post('insertTag', { Text: $scope.tagName }).then(function (res) {
+	$scope.insertStoneType= function() {
+	    if ($scope.stoneType.Name && $scope.stoneType.Name.length > 2) {
+	        Extention.post('insertOrEditStoneType', $scope.stoneType).then(function (res) {
 	            if (res && res.Status == 'success') {
-	                Extention.popSuccess("تگ اضافه شد");
+	                Extention.popSuccess(res.Data);
 	                $scope.pagingController.update();
 	            } else {
 	                Extention.popError("مشکل در وارد کردن تگ ، لطفا دوباره تلاش کنید.");
@@ -1636,119 +1550,51 @@ angular.module(appName).controller('TagCtrl', ['$scope', '$rootScope', '$routePa
 	        });
 	    }
 	}
-
-	$scope.removeTag = function (uid) {
-	    Extention.post('deleteTag', { ID: uid }).then(function (res) {
-			if(res && res.Status=='success'){
-			    Extention.popSuccess("تگ با موفقیت حذف شد!");
-				$scope.pagingController.update();
-			}else{
-			    Extention.popError("مشکل در حذف تگ ، لطفا دوباره امتحان کنید.");
-			}
-		});
-	}
-	activeElement('#SMeta', '#STag');
+	$scope.editStoneType = function (stoneType) {
+        $scope.stoneType = stoneType;$scope.editMode = true;
+    }
+	activeElement('#SStoneType');
 }]);
 
-angular.module(appName).controller('AllUsersCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', '$uibModal', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
+angular.module(appName).controller('UserCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', '$uibModal', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
+    $scope.pagingParams = {};
+    $scope.pagingController = {};
+    $scope.user ={};
+    $scope.search = function () {
+        $scope.pagingController.update();
+    }
 
-    $scope.pagingParams = { userType: null };
-	$scope.pagingController = {};
-	$scope.user = {};
-    $scope.dropDwonTitle = 'نمایش اعضا';
-    $scope.genderDropDwonTitle = 'جنسیت افراد';
-    $scope.Position = {};
-	Extention.postAsync('getAllPositions', {}).then(function (msg) {
-	    $scope.allPositions = msg;
-	});
+    $scope.insertNewUser= function() {
 
-    $scope.openUserModal = function (user) {
-         $uibModal.open({
-            animation: true,
-            templateUrl: 'UserDetail.html',
-            controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
-                $scope.user = user;
-                console.log($scope.user);
-                $scope.cancel = function () {
-                    $uibModalInstance.dismiss('cancel');
-                };
-            }],
-            size: 'md'
+        if (!$scope.user.FullName || $scope.user.FullName.length < 3) {Extention.popError('نام کامل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.Email || $scope.user.Email.length < 3) {Extention.popError('ایمیل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.Username || $scope.user.Username.length < 3) {Extention.popError('نام کاربری وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.pass || $scope.user.pass.length < 3) {Extention.popError('پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.passRe || $scope.user.passRe.length < 3) {Extention.popError('تکرار پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if ($scope.user.passRe != $scope.user.pass) {Extention.popError('پسورد با تکرار آن برابر نیست');return}
+        Extention.post('savePerson', $scope.user).then(function (res) {
+            console.log(res);
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.pagingController.update();
+            } else {
+                Extention.popError(res.Message);
+            }
+        });
+    }
+    $scope.deleteUser= function(id) {
+        Extention.post('deleteUser', {UserID : id}).then(function (res) {
+            console.log(res);
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.pagingController.update();
+            } else {
+                Extention.popError(res.Message);
+            }
         });
     }
 
-	$scope.search = function () {
-		$scope.pagingController.update();
-	}
-	$scope.changeUserState = function (uid , s) {
-		Extention.post('changeUserAccepted',{State : s,UserID:uid}).then(function (res) {
-			if(res && res.Status=='success'){
-				Extention.popSuccess("وضعیت کاربر با موفقیت تغییر کرد!");
-				$scope.pagingController.update();
-			}else{
-				Extention.popError("مشکل در تغییر وضعیت کاربر ، لطفا دوباره تلاش کنید.");
-			}
-		});
-	}
-	$scope.removeUser = function (uid) {
-		Extention.post('deleteUser',{UserID:uid}).then(function (res) {
-			if(res && res.Status=='success'){
-				Extention.popSuccess("کاربر با موفقیت حذف شد!");
-				$scope.pagingController.update();
-			}else{
-				Extention.popError("مشکل در حذف کاربر ، لطفا دوباره امتحان کنید.");
-			}
-		});
-	}
-
-	$scope.changeTypeFilter = function(type) {
-	    $scope.pagingParams.userType = type;
-	    switch (type) {
-	        case null:
-	            $scope.dropDwonTitle = 'همه ی اعضا';
-	            break;
-            case 1:
-                $scope.dropDwonTitle = 'اعضای تایید شده';
-                break;
-            case 0:
-                $scope.dropDwonTitle = 'اعضا در انتظار تایید';
-                break;
-            case -1:
-                $scope.dropDwonTitle = 'اعضای تایید نشده';
-                break;
-	        default:
-	            $scope.dropDwonTitle = 'نمایش اعضا';
-                break;
-	    }
-	    $scope.search();
-	}
-
-	$scope.changeGenderFilter = function (type) {
-	    $scope.pagingParams.genderType = type;
-	    switch (type) {
-	        case null:
-	            $scope.genderDropDwonTitle = 'جنسیت افراد';
-	            break;
-            case 1:
-                $scope.genderDropDwonTitle = 'اعضای زن';
-                break;
-            case 0:
-                $scope.genderDropDwonTitle = 'اعضای مرد';
-                break;
-	        default:
-	            $scope.genderDropDwonTitle = 'جنسیت افراد';
-                break;
-	    }
-	    $scope.search();
-	}
-
-	$scope.changePosition = function () {
-	    
-	    $scope.pagingParams.OrganizationID = ($scope.Position.selected) ? $scope.Position.selected.ID : null;
-	    $scope.search();
-	}
-	
-	activeElement('#SUsers');
+	activeElement('#SUser');
 }]);
 angular.module(appName).controller('MainCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$log', 'Extention', '$cookies', '$uibModal', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, $log, Extention,$cookies,$uibModal) {
 

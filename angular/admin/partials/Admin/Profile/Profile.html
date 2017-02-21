@@ -1,0 +1,177 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small>مدیریت</small>
+       پروفایل من
+    </h1>
+
+    <ol class="breadcrumb">
+        <li><a href="home.php"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">پروفایل من</li>
+    </ol>
+</section>
+
+
+<script  id="cropModal.html" type="text/ng-template">
+    <div class="modal-header">
+        <h3 class="modal-title">حاشیه برداری تصویر</h3>
+    </div>
+    <div class="modal-body">
+        <div class="cropArea" style="height:350px;">
+            <img-crop image="myImage"
+                      result-image="croppedImage"
+                      area-type="circle"
+                      area-min-size="100"
+                      area-max-size="101"
+                      result-image-format="image/png"
+                      result-image-size="250"
+                      result-image-quality="1"
+                      on-change="resultChanged()"></img-crop>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success btn-flat pull-left" ng-click="changeAvatar()">تایید و تغییر تصویر پروفایل</button>
+        <button class="btn btn-warning btn-flat pull-right" ng-click="cancel()">بازگشت</button>
+    </div>
+</script>
+
+<section class="row">
+    <div class="col-xs-12">
+        <div class="col-md-9 col-xs-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="link" ng-class="(activeTab == 2)?'active':''">
+                        <a ng-click="getTab(2)" data-toggle="tab" aria-expanded="true">اطلاعات</a>
+                    </li>
+                    <li class="link" ng-class="(activeTab == 1)?'active':''">
+                        <a ng-click="getTab(1)" data-toggle="tab" aria-expanded="false">
+
+                            <small class="badge bg-green" style="margin-top: -3px;margin-right: 8px"
+                                   ng-bind="curUser.ActiveSessions.length | pNumber"></small>
+                            <span>اتصال ها</span>
+                        </a>
+
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" ng-class="(activeTab == 1)?'active':''" style="margin: -10px;" >
+                        <div class="table-responsive">
+                            <table class="table table-hover border-bottom-table" style="margin-bottom: 0">
+                                <tbody>
+                                <tr>
+                                    <th style="padding-right: 20px">سیستم عامل</th>
+                                    <th>آی پی</th>
+                                    <th>تاریخ اتصال</th>
+                                    <th></th>
+                                </tr>
+                                <tr ng-repeat="us in curUser.ActiveSessions">
+                                    <td class="english-font" style="padding-right: 20px">{{us.DeviceName}}</td>
+                                    <td>{{us.IP |pNumber}}</td>
+                                    <td class="text-muted">{{us.LoginDate | jalaliDate :'jYYYY/jMM/jDD' |pNumber}}</td>
+                                    <td class="text-center">
+                                        <div class="table-action-icons">
+                                            <i confirm="آیا مطمئن هستید که میخواهید این اتصال را حذف کنید؟"
+                                               class="fa fa-times palette-alizarin link hvr-grow-rotate"
+                                               ng-click="removeSession(us.UserSessionID)"></i>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div><!-- /.tab-pane -->
+                    <div class="tab-pane row" ng-class="(activeTab == 2)?'active':''" >
+                        <form class="form-horizontal col-md-9 col-xs-12 pull-right" style="direction: rtl">
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <input type="text" ng-model="curUser.FullName" class="form-control" id="inputName"
+                                           placeholder="نام کامل ... ">
+                                </div>
+                                <label for="inputName" class="col-sm-3 control-label">نام کامل</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <input type="email" ng-model="curUser.Email" class="form-control" id="inputEmail" placeholder="ایمیل ... ">
+                                </div>
+                                <label for="inputEmail" class="col-sm-3 control-label">ایمیل</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <input type="text" ng-model="curUser.Username" ng-disabled="true"
+                                           class="form-control"
+                                           id="inputPhone"
+                                           placeholder="نام کاربری ...">
+                                </div>
+                                <label for="inputPhone" class="col-sm-3 control-label">نام کاربری</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <input type="text" ng-model="curUser.PhoneNumber" class="form-control"
+                                           id="inputPhone1"
+                                           placeholder="شماره تلفن همراه ... ">
+                                </div>
+                                <label for="inputPhone1" class="col-sm-3 control-label">موبایل</label>
+                            </div>
+                            <hr/>
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <input type="password" ng-model="curUser.OldPassword" class="form-control"
+                                           id="pass_old"
+                                           placeholder="رمز فعلی ...">
+                                </div>
+                                <label for="pass_old" class="col-sm-3 control-label">رمز فعلی</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <input type="password" ng-model="curUser.Password" class="form-control"
+                                           id="pass" ng-change="passwordChanged()" ng-model-options="{debounce:100}"
+                                           placeholder="رمز جدید ...">
+                                </div>
+                                <label for="pass" class="col-sm-3 control-label">رمز جدید</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-9" ng-class="(isEqualWithVerify)?'':'has-error'">
+                                    <input type="password" ng-model="curUser.VerifyPassword" class="form-control"
+                                           id="passVerify" ng-change="passwordChanged()" ng-model-options="{debounce:100}"
+                                           placeholder="تکرار رمز جدید ...">
+                                </div>
+                                <label for="passVerify" class="col-sm-3 control-label">تکرار رمز جدید</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <button type="submit" ng-click="saveUserInfo()" class="btn btn-success pull-left">بروزرسانی</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div><!-- /.tab-pane -->
+                </div><!-- /.tab-content -->
+            </div>
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img class="profile-user-img img-responsive img-circle" ng-src="{{user.Image}}"
+                         err-src="../images/Avatar.jpg"
+                         alt="User profile picture">
+                    <h3 class="profile-username text-center">{{::curUser.FullName}}</h3>
+                        <label class="col-sm-12 control-label btn-block text-center" for="inputFile">تصویر پروفایل</label>
+                        <!--<input class="col-sm-9 control-label" type="file" id="exampleInputFile">-->
+                        <div class="col-sm-12 text-center">
+                                <span class="btn btn-primary btn-file btn-block link">
+                    انتخاب فایل  <input type="file" id="inputFile" ngf-select ng-model="avatarFile" name="file"
+                                        accept="image/*" ngf-max-size="3000KB" required
+                                        ngf-model-invalid="errorFile" ngf-multiple="false"
+                                        ngf-change="onChangeAvatar($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                                </span>
+                        </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>
+
+
+
+

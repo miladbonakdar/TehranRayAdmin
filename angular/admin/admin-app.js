@@ -37,7 +37,7 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
                 }
             }
         }).state("profile", {
-            url: "/profile",
+            url: "/profile/:action",
             templateUrl: "angular.partial.Profile.html",
             controller: 'ProfileCtrl',
             resolve: {
@@ -470,7 +470,7 @@ app.factory("Extention", ['$http', '$timeout', '$rootScope', '$state', '$statePa
             });
         }
 
-        $rootScope.session = session;
+        $rootScope.user = session;
 
         $rootScope.spinner = {};
         var obj = {};

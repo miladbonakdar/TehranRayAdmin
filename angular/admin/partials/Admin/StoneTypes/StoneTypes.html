@@ -6,7 +6,7 @@
     </h1>
     <ol class="breadcrumb">
         <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
-        <li class="active"> تگ ها</li>
+        <li class="active"> نوع سنگ ها</li>
     </ol>
 </section>
 
@@ -15,29 +15,28 @@
         <div class="col-sm-9  col-xs-12 pull-right">
             <div class="box box-danger">
                 <div class="box-header">
-                    <h3 class="box-title vazir-font"> تگ ها </h3>
+                    <h3 class="box-title vazir-font"> نوع سنگ ها </h3>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">
                         <tbody>
                             <tr>
                                 <th>شماره</th>
-                                <th>اسم مدرک</th>
+                                <th>نوع سنگ</th>
                                 <th>تعداد استفاده</th>
-                                <th style="width: 25px;"></th>
+                                <th style="width: 50px;"></th>
                             </tr>
                             <tr ng-repeat="u in tags">
-                                <td>{{u.ID | pNumber}}</td>
+                                <td>{{u.StoneTypeID | pNumber}}</td>
                                 <td>
-                                    {{u.Text | pNumber}}
+                                    {{u.Name | pNumber}}
                                 </td>
                                 <td>
                                     {{u.UseCount | pNumber}}
                                 </td>
                                 <td>
-                                    <div class="table-action-icons" ng-if="session.AdminPermissionLevel=='Base'">
-                                        <i confirm="آیا مطمئن هستید که میخواهید این تگ را حذف کنید؟"
-                                         class="fa fa-trash text-red link hvr-grow" ng-click="removeTag(u.ID)" title="حذف تگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true">
+                                    <div class="table-action-icons">
+                                        <i class="fa fa-pencil text-green link hvr-grow" ng-click="editStoneType(u)" title="ویرایش نوع سنگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true">
                                         </i>
                                     </div>
                                 </td>
@@ -49,7 +48,7 @@
                     <auto-paging page="1"
                                  page-size="20"
                                  ul-class="pagination pagination-sm no-margin"
-                                 action-name="getAllTags"
+                                 action-name="getAllStoneTypes"
                                  data-params="pagingParams"
                                  ng-control="pagingController"
                                  items="tags">
@@ -57,16 +56,17 @@
                 </div>
             </div><!-- /.box -->
         </div>
-        <div ng-show="session.AdminPermissionLevel=='Base'" class="col-sm-3 col-xs-12 pull-left">
+        <div class="col-sm-3 col-xs-12 pull-left">
             <div class="box box-success">
                 <div class="box-header">
-                    <h3 class="box-title vazir-font">افزودن تگ جدید</h3>
+                    <h3 class="box-title vazir-font">{{(editMode)?'ویرایش':'افزودن'}} نوع سنگ جدید</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                     <div class="form-group text-right col-xs-12">
-                        <label class="persian-rtl">اسم تگ:</label>
-                        <input type="text" ng-model="tagName" ng-minlength="1" class="form-control col-xs-12 persian-rtl" placeholder="تگ">
-                        <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertTag()" style="margin-top:20px">افزودن</button>
+                        <label class="persian-rtl">نوع سنگ:</label>
+                        <input type="text" ng-model="stoneType.Name" ng-minlength="1" class="form-control col-xs-12 persian-rtl" placeholder="نوع سنگ">
+                        <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertStoneType()" style="margin-top:20px">{{(editMode)?'ویرایش':'افزودن'}}</button>
+                        <button ng-show="editMode" class="form-control col-xs-12 btn btn-sm btn-block btn-danger" ng-click="editMode = false ; stoneType={}" style="margin-top:20px">انصراف</button>
                     </div>
                 </div><!-- /.box-body -->
             </div><!-- /.box -->

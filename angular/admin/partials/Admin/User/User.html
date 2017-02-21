@@ -1,0 +1,88 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small> همه اعضا</small>
+        مدیریت
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">همه اعضا</li>
+    </ol>
+</section>
+
+
+<section class="row">
+    <div class="col-xs-12">
+        <div class="col-sm-8  col-xs-12 pull-right">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font"> همه اعضا </h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr>
+                            <th>نام کامل</th>
+                            <th>ایمیل</th>
+                            <th>نام کاربری</th>
+                            <th>آخرین زمان آنلاین بودن</th>
+                            <th style="width: 50px;"></th>
+                        </tr>
+                        <tr ng-repeat="u in tags">
+                            <td>{{u.FullName | pNumber}}</td>
+                            <td>
+                                {{u.Email | pNumber}}
+                            </td>
+                            <td>
+                                {{u.Username | pNumber}}
+                            </td>
+                            <td>
+                                {{u.LastActiveTime | jalaliDate :'jYYYY/jMM/jDD' | pNumber}}
+                            </td>
+                            <td>
+                                <div class="table-action-icons">
+                                    <i confirm="آیا مطمئن هستید که میخواهید این کاربر '{{u.FullName}}' را حذف کنید؟"
+                                       class="fa fa-trash text-red link hvr-grow" ng-click="deleteUser(u.UserID)" title="حذف کاربر" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"></i>
+
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix text-center">
+                    <auto-paging page="1"
+                                 page-size="20"
+                                 ul-class="pagination pagination-sm no-margin"
+                                 action-name="getAllUsers"
+                                 data-params="pagingParams"
+                                 ng-control="pagingController"
+                                 items="tags">
+                    </auto-paging>
+                </div>
+            </div><!-- /.box -->
+        </div>
+        <div class="col-sm-4 col-xs-12 pull-left">
+            <div class="box box-success">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font">افزودن کاربر جدید</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <div class="form-group text-right col-xs-12">
+                        <input type="text" ng-model="user.FullName" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="نام کامل">
+                        <input type="email" ng-model="user.Email" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="ایمیل">
+                        <input type="text" ng-model="user.Username" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="نام کاربری">
+                        <input type="password" ng-model="user.pass" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="پسورد">
+                        <input type="password" ng-model="user.passRe" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="تکرار پسورد">
+                        <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertNewUser()" style="margin-top:20px">افزودن</button>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>
