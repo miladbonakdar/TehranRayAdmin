@@ -1,18 +1,31 @@
 
-angular.module(appName).controller('UserCtrl', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
+angular.module(appName).controller('CopeCtrl', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
     $scope.pagingParams = {};
     $scope.pagingController = {};
-    $scope.user ={};
-    $scope.UserType ={selected:null};
+    $scope.cope ={};
+    $scope.StoneType ={selected:null};
+    $scope.StoneTypes =[];
 
-    Extention.postAsync('getAllUserTypes', {}).then(function (msg) {
-        $scope.UserTypes = msg.Data;
+    Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
+        $scope.StoneTypes = msg.Data;
     });
 
     $scope.search = function () {
         $scope.pagingController.update();
     }
-
+    $scope.editCope =function (cope) {
+        $scope.cope = cope;
+        for (var i = 0 ; i<$scope.StoneTypes.length ; i++){
+            if($scope.StoneTypes[i].StoneTypeID == cope.StoneTypeID){
+                $scope.StoneType.selected =$scope.StoneTypes[i];
+                break;
+            }
+        }
+    }
+    $scope.cancleEdite =function () {
+        $scope.cope = {};
+        $scope.StoneType.selected = null;
+    }
     $scope.insertNewUser= function() {
 
         if (!$scope.user.FullName || $scope.user.FullName.length < 3) {Extention.popError('نام کامل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
@@ -34,9 +47,26 @@ angular.module(appName).controller('UserCtrl', function ($scope, $rootScope, $ro
             }
         });
     }
-    $scope.deleteUser= function(id) {
-        Extention.post('deleteUser', {UserID : id}).then(function (res) {
-            console.log(res);
+
+    $scope.insertCope= function() {
+        if (!$scope.cope.CopeName || $scope.cope.CopeName.length < 3) {Extention.popError('کد سنگ خام را وارد کنید');return}
+        if (!$scope.cope.Weight) {Extention.popError('وزن سنگ را وارد کنید');return}
+        if (!$scope.cope.UnitPrice) {Extention.popError('قیمت واحد را وارد کنید');return}
+        if (!$scope.StoneType.selected) {Extention.popError('نوع سنگ را انتخاب کنید');return}
+        $scope.cope.StoneTypeID = $scope.StoneType.selected.StoneTypeID;
+        Extention.post('insertOrEditCope', $scope.cope).then(function (res) {
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.cope ={};
+                $scope.StoneType.selected = null;
+                $scope.pagingController.update();
+            } else {
+                Extention.popError("مشکل در وارد کردن سنگ خام ، لطفا دوباره تلاش کنید.");
+            }
+        });
+    }
+    $scope.deleteCope= function(id) {
+        Extention.post('deleteCope', {CopeID : id}).then(function (res) {
             if (res && res.Status == 'success') {
                 Extention.popSuccess(res.Data);
                 $scope.pagingController.update();
@@ -46,5 +76,5 @@ angular.module(appName).controller('UserCtrl', function ($scope, $rootScope, $ro
         });
     }
 
-	activeElement('#SUser');
+	activeElement('#SCope');
 });

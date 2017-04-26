@@ -21,8 +21,7 @@
         ?>
 
     <title ng-bind="($title || 'Loading ...')">Loading ...</title>
-    <link rel="icon" href="../images/title.png" />
-    <link rel="icon" href="{{titleIcon}}" />
+    <link rel="icon" href="../images/icon.png">
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
 </head>
@@ -55,7 +54,7 @@
                             </a>
                         </li>
 
-                        <li class="dropdown user user-menu">
+                        <li class="dropdown user user-menu" ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
                             <a class="dropdown-toggle link" data-toggle="dropdown">
                                 <img ng-src="{{session.Image}}" src="../images/Avatar.jpg" class="user-image" alt="User Image" />
                                 <span class="hidden-xs" ng-bind="session.FullName"></span>
@@ -112,7 +111,7 @@
                             <span>داشبورد</span>
                         </a>
                     </li>
-                    <li class="treeview" id="SUser">
+                    <li class="treeview" id="SUser" ng-if="user.AdminPermissionLevel =='Base'">
                         <a ui-sref="user">
                             <i class="fa fa-user"></i>
                             <span>مدیریت اعضا</span>
@@ -121,28 +120,46 @@
 <!--                            </small>-->
                         </a>
                     </li>
+                    <li class="treeview" id="SPhone" ng-if="user.AdminPermissionLevel =='Base'">
+                        <a ui-sref="phone">
+                            <i class="fa fa-mobile"></i>
+                            <span>مدیریت گوشی ها</span>
+                        </a>
+                    </li>
                     <li class="treeview" id="SStone">
                         <a ui-sref="stone">
                             <i class="fa fa-barcode"></i>
                             <span>سنگ ها</span>
                         </a>
                     </li>
-                    <li class="treeview" id="SStoneType">
+                    <li class="treeview" id="SStoneType" ng-if="user.AdminPermissionLevel =='Base'">
                         <a ui-sref="stone_types">
                             <i class="fa fa-database"></i>
                             <span>نوع سنگ</span>
                         </a>
                     </li>
+                    <li class="treeview" id="SCope" ng-if="user.AdminPermissionLevel =='Base'">
+                        <a ui-sref="cope">
+                            <i class="fa fa-cube"></i>
+                            <span>سنگ های خام</span>
+                        </a>
+                    </li>
                     <li class="treeview" id="SReporting">
                         <a ui-sref="reporting">
                             <i class="fa fa-bar-chart"></i>
-                            <span>گزارش گیری</span>
+                            <span>سنگ های موجود</span>
                         </a>
                     </li>
-                    <li id="SProfile">
+                    <li id="SProfile"   ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
                         <a ui-sref="profile">
                             <i class="fa fa-male"></i>
                             <span>پروفایل من </span>
+                        </a>
+                    </li>
+                    <li class="treeview" ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
+                        <a class="link" href="TehranRey.apk">
+                            <i class="fa fa-android"></i>
+                            <span>دانلود برنامه اندروید</span>
                         </a>
                     </li>
                     <li class="treeview">

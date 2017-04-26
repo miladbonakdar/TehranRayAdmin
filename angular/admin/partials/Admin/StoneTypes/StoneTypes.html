@@ -24,7 +24,8 @@
                                 <th>شماره</th>
                                 <th>نوع سنگ</th>
                                 <th>تعداد استفاده</th>
-                                <th style="width: 50px;"></th>
+                                <th>پیش شماره</th>
+                                <th style="width: 100px;"></th>
                             </tr>
                             <tr ng-repeat="u in tags">
                                 <td>{{u.StoneTypeID | pNumber}}</td>
@@ -35,7 +36,13 @@
                                     {{u.UseCount | pNumber}}
                                 </td>
                                 <td>
+                                    {{u.PreFix}}
+                                </td>
+                                <td>
                                     <div class="table-action-icons">
+                                        <i ng-if="user.AdminPermissionLevel =='Base'" confirm="آیا مطمئن هستید که میخواهید این نوع سنگ را حذف کنید؟"
+                                           class="fa fa-trash text-red link hvr-grow" ng-click="removeStoneType(u.StoneTypeID)" title="حذف نوع سنگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true">
+                                        </i>
                                         <i class="fa fa-pencil text-green link hvr-grow" ng-click="editStoneType(u)" title="ویرایش نوع سنگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true">
                                         </i>
                                     </div>
@@ -48,7 +55,7 @@
                     <auto-paging page="1"
                                  page-size="20"
                                  ul-class="pagination pagination-sm no-margin"
-                                 action-name="getAllStoneTypes"
+                                 action-name="getAllStoneTypesPaging"
                                  data-params="pagingParams"
                                  ng-control="pagingController"
                                  items="tags">
@@ -65,6 +72,7 @@
                     <div class="form-group text-right col-xs-12">
                         <label class="persian-rtl">نوع سنگ:</label>
                         <input type="text" ng-model="stoneType.Name" ng-minlength="1" class="form-control col-xs-12 persian-rtl" placeholder="نوع سنگ">
+                        <input type="text" ng-model="stoneType.PreFix" ng-minlength="1" class="form-control col-xs-12 persian-rtl" style="margin-top:20px" placeholder="پیش شماره">
                         <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertStoneType()" style="margin-top:20px">{{(editMode)?'ویرایش':'افزودن'}}</button>
                         <button ng-show="editMode" class="form-control col-xs-12 btn btn-sm btn-block btn-danger" ng-click="editMode = false ; stoneType={}" style="margin-top:20px">انصراف</button>
                     </div>

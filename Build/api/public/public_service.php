@@ -138,25 +138,23 @@ $app->post('/signInPhone', function() use ($app)  {
 
         } else {
             $response['Status'] = "error";
-            $response['Message'] = 'Login failed. Incorrect credentials';
+            $response['Message'] = '‍‍‍پسورد شما اشتباه است';
         }
     }else {
         $response['Status'] = "error";
-        $response['Message'] = 'No such user is registered';
+        $response['Message'] = 'کاربری با این نام وجود ندارد';
     }
     echoResponse(200, $response);
 });
 
 $app->post('/logoutPhone', function() use ($app)  {
-    if(isset($_SESSION['PhoneID'])){
-        $app->db->deleteFromTable('phone_session',"PhoneID='".$_SESSION['PhoneID']."' AND SessionID='".$_SESSION['SSN']."'");
-        unset($_SESSION['SSN']);
-        unset($_SESSION['PhoneID']);
-        unset($_SESSION['SignupDate']);
-        unset($_SESSION['Username']);
-        echoSuccess("Loged out");
+    $data = json_decode($app->request->getBody());
+    if(isset($data->SSN)){
+        checkValidUser($app->db , $data->SSN);
+        $app->db->deleteFromTable('phone_session',"SessionID='$data->SSN'");
+        echoSuccess("کاربر خارج شد");
     }else
-        echoError("your not authenticated yet");
+        echoError("شما هنوز به سیستم وارد نشده اید");
 });
 
 ?>

@@ -20,27 +20,103 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body text-right persian-rtl">
-                    <div class="form-group col-sm-6">
-                        <div class="col-sm-8">
-                            <ui-select ng-model="Forum.selected" on-select="changeForum()" theme="bootstrap" sortable="true" close-on-select="true">
-                                <ui-select-match allow-clear placeholder="انجمن">{{Forum.selected.Title}}</ui-select-match>
-                                <ui-select-choices repeat="edu in Forums">
-                                    <div compile="edu.Title | highlight: $select.search"></div>
+
+                    <div class="form-group col-sm-6 col-sm-offset-6 pull-right">
+                        <div class="col-xs-8">
+                            <ui-select multiple ng-model="StoneType.selected" on-remove="search()" on-select="search()" theme="bootstrap" sortable="true" close-on-select="false"
+                                       style="width: 100%;direction: rtl">
+                                <ui-select-match placeholder="نوع سنگ">{{$item.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in StoneTypes">
+                                    <div compile="edu.Name | highlight: $select.search" class="text-right"></div>
                                 </ui-select-choices>
                             </ui-select>
                         </div>
-                        <label class="col-sm-4 control-label">انجمن</label>
+                        <label class="col-xs-4 control-label">نوع سنگ</label>
+                    </div>
+                    <div class="form-horizontal form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+
+                        <div class="col-xs-8">
+                            <adm-dtp ng-model='EndDate'  on-datechange="search()"
+                                     options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                     full-data="toFullEnd" class="english-font"
+                                     mindate="{{toFullStart.unix}}"></adm-dtp>
+                        </div>
+                        <label class="col-xs-4 control-label">از تاریخ</label>
+                    </div>
+                    <div class="form-horizontal form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                        <div class="col-xs-8">
+                            <adm-dtp ng-model='StartDate'  on-datechange="search()"
+                                     options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                     full-data="toFullStart" class="english-font"
+                                     ></adm-dtp>
+                        </div>
+                        <label class="col-xs-4 control-label">تا تاریخ</label>
                     </div>
                     <div class="form-group col-sm-6">
-                        <div class="col-sm-8">
-                            <ui-select ng-model="Position.selected" on-select="changePosition()" theme="bootstrap" sortable="true" close-on-select="true">
-                                <ui-select-match allow-clear placeholder="منطقه">{{Position.selected.OrganizationName}}</ui-select-match>
-                                <ui-select-choices repeat="edu in allPositions">
-                                    <div compile="edu.OrganizationName | highlight: $select.search"></div>
+                        <div class="col-xs-8">
+                            <input type="number" name="table_search" ng-model="Height"
+                                   ng-model-options="{debounce:800}" ng-change="search()"
+                                   class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                   placeholder="سانتی متر ">
+                        </div>
+                        <label class="col-xs-4 control-label">عرض بیشتر از</label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="col-xs-8">
+                            <input type="number" name="table_search" ng-model="Width"
+                                   ng-model-options="{debounce:800}" ng-change="search()"
+                                   class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                   placeholder="سانتی متر ">
+                        </div>
+                        <label class="col-xs-4 control-label">طول بیشتر از</label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="col-xs-8">
+                            <input  type="number" name="table_search" ng-model="Area"
+                                   ng-model-options="{debounce:800}" ng-change="search()"
+                                   class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                   placeholder="متر مربع">
+                        </div>
+                        <label class="col-xs-4 control-label">مساحت بیشتر از</label>
+                    </div>
+                    <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                        <div class="col-xs-8">
+                            <input name="table_search" ng-model="pagingParams.CopeName"
+                                   ng-model-options="{debounce:800}" ng-change="search()"
+                                   class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                   placeholder="کد سنگ خام ...">
+                        </div>
+                        <label class="col-xs-4 control-label">کد سنگ خام</label>
+
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="col-xs-8">
+                            <input type="checkbox" ng-model="pagingParams.HasBookMatch" ng-click="search()">
+                        </div>
+                        <label class="col-xs-4 control-label">دارای بوک مچ</label>
+                    </div>
+                    <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                        <div class="col-xs-8">
+                            <ui-select ng-model="StoneState.selected" on-select="search()" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match allow-clear placeholder="وضعیت">{{StoneState.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in StoneStates">
+                                    <div compile="edu.Name | highlight: $select.search"></div>
                                 </ui-select-choices>
                             </ui-select>
                         </div>
-                        <label class="col-sm-4 control-label">ناحیه</label>
+                        <label class="col-xs-4 control-label">وضعیت</label>
+                    </div>
+
+                    <div class="form-group col-sm-6"  ng-if="user.AdminPermissionLevel =='Base'">
+                        <div class="col-xs-8">
+                            <ui-select ng-model="Machine.selected" on-select="search()" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match allow-clear placeholder="نام ماشین">{{Machine.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in machines">
+                                    <div compile="edu.Name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <label class="col-xs-4 control-label">نام ماشین</label>
                     </div>
                 </div>
                 <!-- /.box-body -->
@@ -50,43 +126,37 @@
         <!-- /.col -->
         <div class="row no-padding">
             <div class="col-xs-12">
-                <div class="col-md-3 col-sm-6 col-xs-12" ng-repeat="u in users" >
+                <div class="col-md-3 col-sm-6 col-xs-12" ng-repeat="u in stones" >
                     <!-- Widget: user widget style 1 -->
-                    <div class="box box-widget widget-user-2">
+                    <div class="box box-widget widget-user">
                         <!-- Add the bg color to the header using any of the bg-* classes -->
-                        <div class="widget-user-header" ng-class="getBGColor(u.OrganID)">
-                            <div class="widget-user-image">
-                                <img class="img-circle"  ng-src="{{u.FullPath || '../images/Avatar.jpg'}}" alt="User Avatar">
-                            </div>
-                            <!-- /.widget-user-image -->
-                            <h5 class="widget-user-desc">{{u.FullName |subString :15 |pNumber}}</h5>
-                            <h6 class="widget-user-desc">{{u.OrganizationName|pNumber}}</h6>
+                        <div class="widget-user-header bg-black link" style="padding: 0 !important;height: 150px !important;" ui-sref="stone_page({id:u.StoneID})">
+                            <img id="stoneImage{{u.StoneID}}" ng-init="getStoneImage(u.StoneID , u.Image)" style="height: 150px !important;" class="img-responsive" alt="Photo">
                         </div>
                         <div class="box-footer no-padding">
                             <ul class="nav nav-stacked">
-                                <li><a >امتیاز <span class="pull-left badge bg-blue">{{u.score|pNumber}}</span></a></li>
-                                <li><a >تعداد جواب ها<span class="pull-left badge bg-aqua">{{u.AnswerCount|pNumber}}</span></a></li>
-                                <li><a >تعداد سوالات<span class="pull-left badge bg-green">{{u.QuestionCount|pNumber}}</span></a></li>
-                                <li><a >دنبال کنندگان<span class="pull-left badge bg-red">{{u.FollowersCount|pNumber}}</span></a></li>
+                                <li><a>کد سنگ<span class="pull-left badge bg-yellow ng-binding">{{u.StoneID | pNumber}}</span></a></li>
+                                <li><a>نام سنگ<span class="pull-left badge bg-blue ng-binding">{{u.Name | pNumber}}</span></a></li>
+                                <li><a>شماره اسلب<span class="pull-left badge bg-green ng-binding">{{u.CopeNumber | pNumber}}</span></a></li>
+                                <li ng-if="user.AdminPermissionLevel =='Base'"><a>کد سنگ خام<span class="pull-left badge ng-binding">{{u.CopeName | pNumber}}</span></a></li>
+                                <li><a class="btn btn-block btn-primary btn-sm" style="border: 0;" ui-sref="stone_page({id:u.StoneID})">مشاهده</a></li>
                             </ul>
-                        </div>
-                    </div>
+                        </div></div>
                     <!-- /.widget-user -->
                 </div>
                 <div class="text-center">
                     <auto-paging page="1"
-                                 page-size="20"
+                                 page-size="12"
                                  ul-class="pagination pagination-sm no-margin"
-                                 action-name="getUsersReport"
+                                 action-name="getAllStonesWithImage"
                                  data-params="pagingParams"
                                  total-items="allTotal"
                                  ng-control="pagingController"
-                                 items="users">
+                                 items="stones">
                     </auto-paging>
                 </div>
             </div>
         </div>
-        <!-- /.col -->
     </div>
 </section>
 

@@ -62,6 +62,18 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
             }
         }).state("stone", {
         url: "/stone",
+        templateUrl: "angular.partial.AllStone.html",
+        controller: 'AllStoneCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'لیست سنگ ها';
+            }
+        }
+    }).state("stone_page", {
+        url: "/stonePage/:id",
         templateUrl: "angular.partial.Stone.html",
         controller: 'StoneCtrl',
         resolve: {
@@ -69,7 +81,7 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
                 return $ocLazyLoad.load([]);
             }],
             $title: function () {
-                return 'مدیریت سنگ';
+                return 'مشاهده سنگ';
             }
         }
     }).state("stone_types", {
@@ -85,19 +97,31 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
                 }
             }
         }).state("user", {
-            url: "/user/:id",
-            templateUrl: "angular.partial.User.html",
-            controller: 'UserCtrl',
-            resolve: {
-                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
-                    return $ocLazyLoad.load([]);
-                }],
-                $title: function () {
-                    return 'مدیریت اعضا';
-                }
+        url: "/user/:id",
+        templateUrl: "angular.partial.User.html",
+        controller: 'UserCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'مدیریت اعضا';
             }
-        }).state("stone_edit", {
-        url: "/stoneEdit:id",
+        }
+    }).state("phone", {
+        url: "/phone",
+        templateUrl: "angular.partial.Phone.html",
+        controller: 'PhoneCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'مدیریت گوشی ها';
+            }
+        }
+    }).state("stone_edit", {
+        url: "/StoneEdit/:id",
         templateUrl: "angular.partial.StoneEdit.html",
         controller: 'StoneEditCtrl',
         resolve: {
@@ -109,18 +133,18 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
             }
         }
     })
-    //     .state("questions", {
-    //     url: "/questions/:id",
-    //     templateUrl: "angular.partial.Questions.html",
-    //     controller: 'QuestionsCtrl',
-    //     resolve: {
-    //         deps: ['$ocLazyLoad', function ($ocLazyLoad) {
-    //             return $ocLazyLoad.load(['../app/directives/auto-pagination.js']);
-    //         }],
-    //         $title: function () {
-    //             return 'مدیریت سوال ها';
-    //         }
-    //     }
+        .state("cope", {
+        url: "/Cope",
+        templateUrl: "angular.partial.Cope.html",
+        controller: 'CopeCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'مدیریت سنگ های خام';
+            }
+        }});
     // }).state("award_questions", {
     //     url: "/AwardQuestions",
     //     templateUrl: "angular.partial.AwardQuestions.html",
@@ -864,6 +888,45 @@ app.filter('split', function () {
     }
 });
 
+app.filter('Length', function () {
+    return function (input) {
+        var number = Number(input);
+        number /= 10;
+        return number.toString() +" سانتی متر";
+    }
+});
+
+app.filter('Volume', function () {
+    return function (input) {
+        var number = Number(input);
+        number /= 1000000;
+        return number.toString() +" متر مربع";
+    }
+});
+app.filter('Weight', function () {
+    return function (input) {
+        if(input.length > 3)
+        {
+            var number = Number(input);
+            number /= 1000;
+            return number.toString() +" تن";
+        }else
+            return input +" تن";
+    }
+});
+app.filter('Toman', function () {
+    return function (input) {
+            return input +"  هزار تومان";
+    }
+});
+app.filter('Time', function () {
+    return function (input) {
+        var myDate = new Date(input);
+
+        return myDate.getHours() +":"+myDate.getMinutes();
+    }
+});
+
 app.directive('slideable', function () {
     return {
         restrict: 'C',
@@ -989,13 +1052,149 @@ angular.module("ui.router.title", ["ui.router"])
 angular.module(appName).controller('AdminCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$log', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, $log) {
 
 }]);
-angular.module(appName).controller('DashboardCtrl', ['$scope', 'ADMdtpConvertor', '$rootScope', 'Extention', '$state', '$timeout', function ($scope, ADMdtpConvertor, $rootScope, Extention, $state, $timeout) {
-    $scope.getStone = function () {
-        Extention.post('getStone',{}).then(function (res) {
-        console.log(res);
+
+angular.module(appName).controller('AllStoneCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention) {
+    $scope.pagingParams = {};
+	$scope.pagingController = {};
+	console.log($rootScope.user.AdminPermissionLevel);
+	$scope.search = function () {
+		$scope.pagingController.update();
+	}
+
+	$scope.removeStone = function (uid) {
+	    Extention.post('deleteStone', { StoneID: uid }).then(function (res) {
+			if(res && res.Status=='success'){
+			    Extention.popSuccess("سنگ با موفقیت حذف شد!");
+				$scope.pagingController.update();
+			}else{
+			    Extention.popError("مشکل در حذف سنگ ، لطفا دوباره امتحان کنید.");
+			}
+		});
+	}
+	activeElement('#SStone');
+}]);
+
+angular.module(appName).controller('CopeCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', '$uibModal', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
+    $scope.pagingParams = {};
+    $scope.pagingController = {};
+    $scope.cope ={};
+    $scope.StoneType ={selected:null};
+    $scope.StoneTypes =[];
+
+    Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
+        $scope.StoneTypes = msg.Data;
+    });
+
+    $scope.search = function () {
+        $scope.pagingController.update();
+    }
+    $scope.editCope =function (cope) {
+        $scope.cope = cope;
+        for (var i = 0 ; i<$scope.StoneTypes.length ; i++){
+            if($scope.StoneTypes[i].StoneTypeID == cope.StoneTypeID){
+                $scope.StoneType.selected =$scope.StoneTypes[i];
+                break;
+            }
+        }
+    }
+    $scope.cancleEdite =function () {
+        $scope.cope = {};
+        $scope.StoneType.selected = null;
+    }
+    $scope.insertNewUser= function() {
+
+        if (!$scope.user.FullName || $scope.user.FullName.length < 3) {Extention.popError('نام کامل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.Email || $scope.user.Email.length < 3) {Extention.popError('ایمیل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.Username || $scope.user.Username.length < 3) {Extention.popError('نام کاربری وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.pass || $scope.user.pass.length < 3) {Extention.popError('پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.user.passRe || $scope.user.passRe.length < 3) {Extention.popError('تکرار پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.UserType.selected) {Extention.popError('نوع کاربر را انتخاب کنید');return}
+        if ($scope.user.passRe != $scope.user.pass) {Extention.popError('پسورد با تکرار آن برابر نیست');return}
+        $scope.user.PermissionID = $scope.UserType.selected.AdminPermissionID;
+        Extention.post('savePerson', $scope.user).then(function (res) {
+            console.log(res);
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.user ={};
+                $scope.pagingController.update();
+            } else {
+                Extention.popError(res.Message);
+            }
         });
     }
+
+    $scope.insertCope= function() {
+        if (!$scope.cope.CopeName || $scope.cope.CopeName.length < 3) {Extention.popError('کد سنگ خام را وارد کنید');return}
+        if (!$scope.cope.Weight) {Extention.popError('وزن سنگ را وارد کنید');return}
+        if (!$scope.cope.UnitPrice) {Extention.popError('قیمت واحد را وارد کنید');return}
+        if (!$scope.StoneType.selected) {Extention.popError('نوع سنگ را انتخاب کنید');return}
+        $scope.cope.StoneTypeID = $scope.StoneType.selected.StoneTypeID;
+        Extention.post('insertOrEditCope', $scope.cope).then(function (res) {
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.cope ={};
+                $scope.StoneType.selected = null;
+                $scope.pagingController.update();
+            } else {
+                Extention.popError("مشکل در وارد کردن سنگ خام ، لطفا دوباره تلاش کنید.");
+            }
+        });
+    }
+    $scope.deleteCope= function(id) {
+        Extention.post('deleteCope', {CopeID : id}).then(function (res) {
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.pagingController.update();
+            } else {
+                Extention.popError(res.Message);
+            }
+        });
+    }
+
+	activeElement('#SCope');
+}]);
+angular.module(appName).controller('DashboardCtrl', ['$scope', 'ADMdtpConvertor', '$rootScope', 'Extention', '$state', '$timeout', function ($scope, ADMdtpConvertor, $rootScope, Extention, $state, $timeout) {
+
     activeElement('#SDashboard');
+}]);
+
+angular.module(appName).controller('PhoneCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', '$uibModal', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
+    $scope.pagingParams = {};
+    $scope.pagingController = {};
+    $scope.phone ={};
+    $scope.search = function () {
+        $scope.pagingController.update();
+    }
+
+    $scope.insertNewPhone= function() {
+
+        if (!$scope.phone.Username || $scope.phone.Username.length < 3) {Extention.popError('نام کاربری وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.phone.pass || $scope.phone.pass.length < 3) {Extention.popError('پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.phone.passRe || $scope.phone.passRe.length < 3) {Extention.popError('تکرار پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if ($scope.phone.passRe != $scope.phone.pass) {Extention.popError('پسورد با تکرار آن برابر نیست');return}
+        Extention.post('savePhone', $scope.phone).then(function (res) {
+            console.log(res);
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.pagingController.update();
+            } else {
+                Extention.popError(res.Message);
+            }
+        });
+    }
+    $scope.deletePhone= function(id) {
+        Extention.post('deletePhone', {PhoneID : id}).then(function (res) {
+            console.log(res);
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $scope.pagingController.update();
+            } else {
+                Extention.popError(res.Message);
+            }
+        });
+    }
+
+	activeElement('#SPhone');
 }]);
 
 angular.module(appName).controller('ProfileCtrl', ['$scope', '$rootScope', '$stateParams', '$state', '$uibModal', '$timeout', 'Extention', 'Upload', function ($scope, $rootScope, $stateParams, $state, $uibModal,$timeout, Extention,Upload) {
@@ -1300,233 +1499,197 @@ angular.module(appName).controller('ProfileCtrl', ['$scope', '$rootScope', '$sta
 angular.module(appName).controller('ReportingCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$stateParams', '$uibModal', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, $stateParams, $uibModal, Extention) {
     $scope.pagingParams = { Position: null };
     $scope.pagingController = {};
-    $scope.users = [];
-    $scope.Position= {selected : null};
-    $scope.Forum= {selected : null};
-    $scope.Forums= [];
+    $scope.Machine ={selected :null};
+    $scope.StoneType ={selected :[]};
+    $scope.StoneState ={selected :null};
+    $scope.machines = [{
+        Name : "ماشین A",
+        ID : "1"
+    },{
+        Name : "ماشین B",
+        ID : "2"
+    }];
 
-    Extention.postAsync('getAllPositions', {}).then(function (msg) {
-        $scope.allPositions = msg;
-    });
-    Extention.postAsync('getAllForumTypes', {}).then(function (msg) {
-        $scope.Forums = msg.Data;
-    });
+    $scope.StoneStates = [{
+        Name : "فروخته شده",
+        ID : "2"
+    },{
+        Name : "موجود",
+        ID : "1"
+    }];
 
+    if($rootScope.user.AdminPermissionLevel =='viewStones'){
+        $scope.StoneState.selected = $scope.StoneStates[1];
+    }
+
+    Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
+        $scope.StoneTypes = msg.Data;
+    });
     $scope.search = function () {
+        $scope.pagingParams.MachineID = ($scope.Machine.selected) ? $scope.Machine.selected.ID : null;
+        $scope.pagingParams.StoneStateID = ($scope.StoneState.selected) ? $scope.StoneState.selected.ID : null;
+        if($scope.Height){
+            $scope.pagingParams.Height = Number($scope.Height)*10;
+        }
+        if($scope.Width){
+            $scope.pagingParams.Width = Number($scope.Width)*10;
+        }
+        if($scope.Area){
+            $scope.pagingParams.Area = $scope.Area*1000000;
+        }
+        if($scope.EndDate){
+            var EndDate = new Date($scope.toFullEnd.unix);
+            $scope.pagingParams.EndDate  = EndDate;
+        }
+        if($scope.StartDate){
+            var StartDate = new Date($scope.toFullStart.unix);
+            $scope.pagingParams.StartDate  = StartDate;
+        }
+
+        if($scope.StoneType.selected.length > 0){
+            $scope.pagingParams.StoneTypeID = "("+$scope.StoneType.selected[0].StoneTypeID;
+            for(var i = 1 ; i < $scope.StoneType.selected.length ; i++){
+                $scope.pagingParams.StoneTypeID += ","+$scope.StoneType.selected[i].StoneTypeID;
+            }
+            $scope.pagingParams.StoneTypeID += ")";
+        }else
+            $scope.pagingParams.StoneTypeID = null;
         $scope.pagingController.update();
     }
 
-    $scope.changeForum = function () {
-        $scope.pagingParams.ForumMainSubjectID = ($scope.Forum.selected) ? $scope.Forum.selected.ID : null;
-        $scope.search();
-    }
-    $scope.changePosition = function () {
-        $scope.pagingParams.OrganizationID = ($scope.Position.selected) ? $scope.Position.selected.ID : null;
-        $scope.search();
-    }
-
-    $scope.getBGColor = function(id) {
-        id = id % 15 + 1;
-        switch (id) {
-            case 1:
-                return 'bg-red-active';
-            case 2:
-                return 'bg-yellow-active';
-            case 3:
-                return 'bg-aqua-active';
-            case 4:
-                return 'bg-blue-active';
-            case 5:
-                return 'bg-light-blue-active';
-            case 6:
-                return 'bg-green-active';
-            case 7:
-                return 'bg-navy-active';
-            case 8:
-                return 'bg-teal-active';
-            case 9:
-                return 'bg-olive-active';
-            case 10:
-                return 'bg-lime-active';
-            case 11:
-                return 'bg-orange-active';
-            case 12:
-                return 'bg-fuchsia-active';
-            case 13:
-                return 'bg-purple-active';
-            case 14:
-                return 'bg-maroon-active';
-            case 15:
-                return 'bg-black-active';
-            default:
-                return 'bg-red-active';
-        }
+    $scope.getStoneImage = function (id , image) {
+        $timeout(function () {
+            document.getElementById("stoneImage"+id).setAttribute("src","data:image/png;base64,"+image);
+        })
     }
 
     activeElement('#SReporting','#SPersonReport');
 }]);
 
-angular.module(appName).controller('SkillCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention) {
-    $scope.pagingParams = {};
-	$scope.pagingController = {};
+angular.module(appName).controller('StoneCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$stateParams', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout,$stateParams, Extention) {
+	$scope.stone = null;
 
-	$scope.search = function () {
-		$scope.pagingController.update();
-	}
-
-	$scope.insertSkill = function () {
-	    if ($scope.skillName) {
-	        Extention.post('insertSkill', { Skill: $scope.skillName }).then(function (res) {
-	            if (res && res.Status == 'success') {
-	                $scope.skillName = '';
-	                Extention.popSuccess("مهارت اضافه شد");
-	                $scope.pagingController.update();
-	            } else {
-	                Extention.popError("مشکل در وارد کردن مهارت ، لطفا دوباره تلاش کنید.");
-	            }
-	        });
-	    }
-	}
-
-	$scope.removeSkill = function (uid) {
-	    Extention.post('deleteSkill', { ID: uid }).then(function (res) {
-			if(res && res.Status=='success'){
-			    Extention.popSuccess("مهارت با موفقیت حذف شد!");
-				$scope.pagingController.update();
-			}else{
-			    Extention.popError("مشکل در حذف مهارت ، لطفا دوباره امتحان کنید.");
-			}
-		});
-	}
-	activeElement('#SMeta', '#SSkill');
+    ($scope.getStoneByID = function () {
+        Extention.post("getStone", { StoneID: $stateParams.id }).then(function (res) {
+            if (res.Status == 'success') {
+                $scope.stone = res.Data;
+                document.getElementById("stoneImage").setAttribute("src","data:image/png;base64,"+$scope.stone.Image);
+                console.log(res);
+            } else {
+                $scope.stone = null;
+                console.log(res);
+            }
+        });
+    })();
 }]);
-angular.module(appName).controller('UploadLibraryCtrl', ['$scope', '$rootScope', '$state', '$timeout', 'Extention', 'Upload', function ($scope, $rootScope, $state, $timeout, Extention , Upload) {
 
-	$scope.allTags = [];
-	// uploading -> 0
-	// uploaded -> 1
-	// upload_error -> 2
+angular.module(appName).controller('StoneEditCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$stateParams', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout,$stateParams, Extention) {
+	$scope.stone = null;
+    $scope.Machine ={selected :null};
+    $scope.Direction ={selected :null};
+    $scope.StoneType ={selected :null};
+    $scope.CopeType ={selected :null};
+    $scope.StoneState ={selected :null};
+    $scope.machines = [{
+        Name : "ماشین A",
+        ID : "1"
+    },{
+        Name : "ماشین B",
+        ID : "2"
+    },{
+        Name : "ماشین C",
+        ID : "3"
+    }];
 
-	Extention.post('getAllTags').then(function (res) {
-		$scope.allTags = res.Items;
-	});
-	$scope.isResumeSupported = Upload.isResumeSupported();
+    $scope.Directions = [{
+        Name : "بدون بوک مچ",
+        Value : ""
+    },{
+        Name : "چپ",
+        Value : "LEFT"
+    },{
+        Name : "راست",
+        Value : "RIGHT"
+    }];
 
-	Extention.post('getUploadLibraryData').then(function (res) {
-		$scope.pageData = res;
-	});
+    $scope.StoneStates = [{
+        Name : "فروخته شده",
+        ID : "2"
+    },{
+        Name : "موجود",
+        ID : "1"
+    }];
 
-	$scope.subjectChanged = function (file) {
 
-		file.allChildSubjects = undefined;
-		file.Subject = undefined;
-		$timeout(function () {
-			file.allChildSubjects = file.MainSubject.Childs;
-		});
-	};
+    ($scope.getStoneByID = function () {
+        Extention.post("getStone", { StoneID: $stateParams.id }).then(function (res) {
+            if (res.Status == 'success') {
+                res.Data.CopeNumber = Number(res.Data.CopeNumber);
+                res.Data.Area = Number(res.Data.Area);
+                res.Data.Width = Number(res.Data.Width);
+                res.Data.Height = Number(res.Data.Height);
+                $scope.stone = res.Data;
+                document.getElementById("stoneImage").setAttribute("src","data:image/png;base64,"+$scope.stone.Image);
+                Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
+                    $scope.StoneTypes = msg.Data;
+                    for(var i =0 ;i<$scope.StoneTypes.length;i++){
+                        if($scope.stone.StoneTypeID == $scope.StoneTypes[i].StoneTypeID)
+                        {$scope.StoneType.selected = $scope.StoneTypes[i];break;}
+                    }
+                });
+                Extention.postAsync('getAllCopeTypes', {}).then(function (msg) {
+                    $scope.copeTypes = msg.Data;
+                    for(var i =0 ;i<$scope.copeTypes.length;i++){
+                        if($scope.stone.CopeID == $scope.copeTypes[i].CopeID)
+                        {$scope.CopeType.selected = $scope.copeTypes[i];break;}
+                    }
+                });
+                for(var i =0 ;i<$scope.machines.length;i++){
+                    if($scope.stone.MachineNumber == $scope.machines[i].ID)
+                    {$scope.Machine.selected = $scope.machines[i];break;}
+                }
+                for(var i =0 ;i<$scope.Directions.length;i++){
+                    if($scope.stone.BockMachDirection == $scope.Directions[i].Value)
+                    {$scope.Direction.selected = $scope.Directions[i];break;}
+                }
+                for(var i =0 ;i<$scope.StoneStates.length;i++){
+                    if($scope.stone.Sold == ($scope.StoneStates[i].ID)-1)
+                    {$scope.StoneState.selected = $scope.StoneStates[i];break;}
+                }
+                console.log(res);
+            } else {
+                $scope.stone = null;
+                console.log(res);
+            }
+        });
+    })();
 
-	$scope.togglePauseUploadFile = function (file) {
-		file.uploader.pause();
-	};
+    $scope.editStone = function () {
+        if (!$scope.StoneType.selected) {Extention.popError('نوع سنگ را انتخاب کنید');return}
+        if (!$scope.Machine.selected) {Extention.popError('ماشین تولید کننده انتخاب نشده است');return}
+        if (!$scope.Direction.selected) {Extention.popError('جهت بوک مچ انتخاب نشده است');return}
+        if (!$scope.CopeType.selected) {Extention.popError('بلوک سنگ انتخاب نشده است');return}
+        if (!$scope.StoneState.selected) {Extention.popError('وضعیت سنگ انتخاب نشده است');return}
+        $scope.stone.StoneTypeID = $scope.StoneType.selected.StoneTypeID;
+        $scope.stone.MachineNumber = $scope.Machine.selected.ID;
+        $scope.stone.CopeID = $scope.CopeType.selected.CopeID;
+        $scope.stone.BockMachDirection = $scope.Direction.selected.Value;
+        $scope.stone.Sold = Number($scope.StoneState.selected.ID)-1;
 
-	$scope.removeFile = function (file) {
-		if(file.uploadState == 0){
-			file.uploader.abort();
-			file.percent = '0';
-		}else{
-			var index = $scope.myFiles.indexOf(file);
-			$scope.myFiles.splice(index,1);
-		}
-	};
-	
-	$scope.startUploadAll = function () {
+        var data =$scope.stone;
+        data.Image = null;
+        data.ImageSize = null;
+        Extention.post('editStone', data).then(function (res) {
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $state.go('stone');
+            } else {
+                console.log(res);
+                Extention.popError("مشکل در ویرایش سنگ ، لطفا دوباره تلاش کنید.");
+            }
+        });
+    }
 
-		if($scope.myFiles && $scope.myFiles.length){
-			var fileCancel = 0;
-			for (var i = 0; i < $scope.myFiles.length; i++) {
-				var file = $scope.myFiles[i];
-
-				if(file.uploadState == 1){
-					fileCancel++;
-					continue;
-				}
-
-				$scope.startUploadFile(file);
-			}
-
-			if(fileCancel == $scope.myFiles.length){
-				Extention.popInfo('تمامی فایل ها آپلود شده اند!');
-			}
-		}else{
-			Extention.popInfo('هیچ فایلی برای آپلود انتخاب نشده!');
-		}
-
-	}
-
-	$scope.startUploadFile = function (file) {
-
-		if(file.uploadState == 0)
-			return;
-
-		file.uploadState = 0;
-
-		var subjectID = undefined;
-		var mainSubjectID = undefined;
-
-		if(angular.isDefined(file.MainSubject)){
-			mainSubjectID = file.MainSubject.SubjectID;
-		}
-
-		if(angular.isDefined(file.Subject)){
-			subjectID = file.Subject.ID;
-		}
-console.log({file: file , Description : file.Description ,
-	SubjectID : subjectID, MainSubjectID :mainSubjectID,
-	Title : file.Title , Tags : file.Tags
-});
-		file.uploader = Upload.upload({
-			url: uploadURL + 'upload_library.php',
-			data: {file: file , Description : file.Description ,
-				SubjectID : subjectID, MainSubjectID :mainSubjectID,
-				Title : file.Title , Tags : file.Tags
-			}
-		});
-
-		file.uploader.then(function (resp) {
-			resp.config.data.file.uploadState = 1;
-			console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-		}, function (resp) {
-			resp.config.data.file.uploadState = 2;
-			if(resp.status == -1)
-				resp.config.data.file.percent = 0;
-			console.log('Error status: ' + resp.status);
-		}, function (evt) {
-			var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-			evt.config.data.file.percent = progressPercentage;
-			evt.config.data.file.loaded = $scope.sizeFilter(evt.loaded);
-			//console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-		});
-	}
-
-	var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PT'];
-
-	$scope.sizeFilter = function(bytes) {
-
-		var number = Math.floor(Math.log(bytes) / Math.log(1024));
-		return persianJs((bytes / Math.pow(1024, Math.floor(number))).toFixed(1)).englishNumber().toString() +
-			' ' + units[number] ;
-	}
-
-	$scope.abortUpload = function (file) {
-		file.uploader.abort();
-	}
-
-	$scope.isImageFormat = function (type) {
-		var i = type.indexOf('image');
-		return i > -1;
-	}
-
-	activeElement('#SLibrary', '#SUpload');
 }]);
 
 angular.module(appName).controller('StoneTypesCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention) {
@@ -1544,6 +1707,8 @@ angular.module(appName).controller('StoneTypesCtrl', ['$scope', '$rootScope', '$
 	            if (res && res.Status == 'success') {
 	                Extention.popSuccess(res.Data);
 	                $scope.pagingController.update();
+                    $scope.stoneType ={Name:"",PreFix:""};
+                    $scope.editMode = false;
 	            } else {
 	                Extention.popError("مشکل در وارد کردن تگ ، لطفا دوباره تلاش کنید.");
 	            }
@@ -1553,6 +1718,17 @@ angular.module(appName).controller('StoneTypesCtrl', ['$scope', '$rootScope', '$
 	$scope.editStoneType = function (stoneType) {
         $scope.stoneType = stoneType;$scope.editMode = true;
     }
+
+    $scope.removeStoneType = function (uid) {
+        Extention.post('deleteStoneType', { StoneTypeID: uid }).then(function (res) {
+            if(res && res.Status=='success'){
+                Extention.popSuccess("نوع سنگ با موفقیت حذف شد!");
+                $scope.search();
+            }else{
+                Extention.popError("مشکل در حذف نوع سنگ ، لطفا دوباره امتحان کنید.");
+            }
+        });
+    }
 	activeElement('#SStoneType');
 }]);
 
@@ -1560,6 +1736,12 @@ angular.module(appName).controller('UserCtrl', ['$scope', '$rootScope', '$routeP
     $scope.pagingParams = {};
     $scope.pagingController = {};
     $scope.user ={};
+    $scope.UserType ={selected:null};
+
+    Extention.postAsync('getAllUserTypes', {}).then(function (msg) {
+        $scope.UserTypes = msg.Data;
+    });
+
     $scope.search = function () {
         $scope.pagingController.update();
     }
@@ -1571,11 +1753,14 @@ angular.module(appName).controller('UserCtrl', ['$scope', '$rootScope', '$routeP
         if (!$scope.user.Username || $scope.user.Username.length < 3) {Extention.popError('نام کاربری وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
         if (!$scope.user.pass || $scope.user.pass.length < 3) {Extention.popError('پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
         if (!$scope.user.passRe || $scope.user.passRe.length < 3) {Extention.popError('تکرار پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
+        if (!$scope.UserType.selected) {Extention.popError('نوع کاربر را انتخاب کنید');return}
         if ($scope.user.passRe != $scope.user.pass) {Extention.popError('پسورد با تکرار آن برابر نیست');return}
+        $scope.user.PermissionID = $scope.UserType.selected.AdminPermissionID;
         Extention.post('savePerson', $scope.user).then(function (res) {
             console.log(res);
             if (res && res.Status == 'success') {
                 Extention.popSuccess(res.Data);
+                $scope.user ={};
                 $scope.pagingController.update();
             } else {
                 Extention.popError(res.Message);

@@ -62,6 +62,18 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
             }
         }).state("stone", {
         url: "/stone",
+        templateUrl: "angular.partial.AllStone.html",
+        controller: 'AllStoneCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'لیست سنگ ها';
+            }
+        }
+    }).state("stone_page", {
+        url: "/stonePage/:id",
         templateUrl: "angular.partial.Stone.html",
         controller: 'StoneCtrl',
         resolve: {
@@ -69,7 +81,7 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
                 return $ocLazyLoad.load([]);
             }],
             $title: function () {
-                return 'مدیریت سنگ';
+                return 'مشاهده سنگ';
             }
         }
     }).state("stone_types", {
@@ -85,19 +97,31 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
                 }
             }
         }).state("user", {
-            url: "/user/:id",
-            templateUrl: "angular.partial.User.html",
-            controller: 'UserCtrl',
-            resolve: {
-                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
-                    return $ocLazyLoad.load([]);
-                }],
-                $title: function () {
-                    return 'مدیریت اعضا';
-                }
+        url: "/user/:id",
+        templateUrl: "angular.partial.User.html",
+        controller: 'UserCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'مدیریت اعضا';
             }
-        }).state("stone_edit", {
-        url: "/stoneEdit:id",
+        }
+    }).state("phone", {
+        url: "/phone",
+        templateUrl: "angular.partial.Phone.html",
+        controller: 'PhoneCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'مدیریت گوشی ها';
+            }
+        }
+    }).state("stone_edit", {
+        url: "/StoneEdit/:id",
         templateUrl: "angular.partial.StoneEdit.html",
         controller: 'StoneEditCtrl',
         resolve: {
@@ -109,18 +133,18 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
             }
         }
     })
-    //     .state("questions", {
-    //     url: "/questions/:id",
-    //     templateUrl: "angular.partial.Questions.html",
-    //     controller: 'QuestionsCtrl',
-    //     resolve: {
-    //         deps: ['$ocLazyLoad', function ($ocLazyLoad) {
-    //             return $ocLazyLoad.load(['../app/directives/auto-pagination.js']);
-    //         }],
-    //         $title: function () {
-    //             return 'مدیریت سوال ها';
-    //         }
-    //     }
+        .state("cope", {
+        url: "/Cope",
+        templateUrl: "angular.partial.Cope.html",
+        controller: 'CopeCtrl',
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load([]);
+            }],
+            $title: function () {
+                return 'مدیریت سنگ های خام';
+            }
+        }});
     // }).state("award_questions", {
     //     url: "/AwardQuestions",
     //     templateUrl: "angular.partial.AwardQuestions.html",
@@ -861,6 +885,45 @@ app.filter('split', function () {
                 str += (input[i][feildName] + splitChar);
         }
         return str;
+    }
+});
+
+app.filter('Length', function () {
+    return function (input) {
+        var number = Number(input);
+        number /= 10;
+        return number.toString() +" سانتی متر";
+    }
+});
+
+app.filter('Volume', function () {
+    return function (input) {
+        var number = Number(input);
+        number /= 1000000;
+        return number.toString() +" متر مربع";
+    }
+});
+app.filter('Weight', function () {
+    return function (input) {
+        if(input.length > 3)
+        {
+            var number = Number(input);
+            number /= 1000;
+            return number.toString() +" تن";
+        }else
+            return input +" تن";
+    }
+});
+app.filter('Toman', function () {
+    return function (input) {
+            return input +"  هزار تومان";
+    }
+});
+app.filter('Time', function () {
+    return function (input) {
+        var myDate = new Date(input);
+
+        return myDate.getHours() +":"+myDate.getMinutes();
     }
 });
 

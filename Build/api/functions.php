@@ -146,5 +146,25 @@ function reArrayFiles(&$file_post) {
     return $file_ary;
 }
 
+function checkUserPemision($app,$permision = "Base") {
+    //permision vvalue most be :
+    //Base for Administrator
+    //ViewStones for Guest
+    //LimitFuctionality for user
+    $sess = $app->session;
+    $where = "u.UserID = '$sess->UserID' and (ap.PermissionLevel = '$permision'";
+    if($permision == 'LimitFuctionality'){
+        $where .= " OR ap.PermissionLevel = 'Base'";
+    }
+    $where .= ")";
+    $resQ = $app->db->makeQuery("select a.AdminID as val from user as u INNER JOIN admin as a on a.UserID = u.UserID
+INNER JOIN admin_permission as ap on ap.AdminPermissionID = a.PermissionID
+where $where");
+
+    $sql =$resQ->fetch_assoc();
+    if(!$sql)
+        echoError('You don\'t have permision to do this action');
+
+}
 
 ?>

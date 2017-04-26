@@ -6,7 +6,7 @@
     </h1>
     <ol class="breadcrumb">
         <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
-        <li class="active">همه اعضا</li>
+        <li class="active">همه گوشی ها</li>
     </ol>
 </section>
 
@@ -16,33 +16,35 @@
         <div class="col-sm-8  col-xs-12 pull-right">
             <div class="box box-danger">
                 <div class="box-header">
-                    <h3 class="box-title vazir-font"> همه اعضا </h3>
+                    <h3 class="box-title vazir-font"> همه گوشی ها </h3>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">
                         <tbody>
                         <tr>
-                            <th>نام کامل</th>
-                            <th>ایمیل</th>
+                            <th>شماره</th>
                             <th>نام کاربری</th>
-                            <th>نوع کاربر</th>
+                            <th>تاریخ عضویت</th>
+                            <th>ساعت عضویت</th>
                             <th style="width: 50px;"></th>
                         </tr>
                         <tr ng-repeat="u in tags">
-                            <td>{{u.FullName | pNumber}}</td>
                             <td>
-                                {{u.Email | pNumber}}
+                                {{$index + 1 | pNumber}}
                             </td>
                             <td>
                                 {{u.Username | pNumber}}
                             </td>
                             <td>
-                                {{u.permision | pNumber}}
+                                {{u.SignupDate | jalaliDate :'jYYYY/jMM/jDD' | pNumber}}
+                            </td>
+                            <td>
+                                {{u.SignupDate | Time | pNumber}}
                             </td>
                             <td>
                                 <div class="table-action-icons">
-                                    <i confirm="آیا مطمئن هستید که میخواهید این کاربر '{{u.FullName}}' را حذف کنید؟"
-                                       class="fa fa-trash text-red link hvr-grow" ng-click="deleteUser(u.UserID)" title="حذف کاربر" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"></i>
+                                    <i confirm="آیا مطمئن هستید که میخواهید این گوشی را حذف کنید؟"
+                                       class="fa fa-trash text-red link hvr-grow" ng-click="deletePhone(u.PhoneID)" title="حذف کاربر" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"></i>
 
                                 </div>
                             </td>
@@ -54,7 +56,7 @@
                     <auto-paging page="1"
                                  page-size="20"
                                  ul-class="pagination pagination-sm no-margin"
-                                 action-name="getAllUsers"
+                                 action-name="getAllPhones"
                                  data-params="pagingParams"
                                  ng-control="pagingController"
                                  items="tags">
@@ -69,25 +71,13 @@
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                     <div class="form-group text-right col-xs-12">
-                        <input type="text" ng-model="user.FullName" ng-minlength="1"
-                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="نام کامل">
-                        <input type="email" ng-model="user.Email" ng-minlength="1"
-                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="ایمیل">
-                        <input type="text" ng-model="user.Username" ng-minlength="1"
+                        <input type="text" ng-model="phone.Username" ng-minlength="1"
                                class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="نام کاربری">
-                        <div class="col-xs-12 persian-rtl no-padding" style="margin-top: 20px;">
-                            <ui-select ng-model="UserType.selected" theme="bootstrap" sortable="true" close-on-select="true">
-                                <ui-select-match allow-clear placeholder="نوع کاربر">{{UserType.selected.Permission}}</ui-select-match>
-                                <ui-select-choices repeat="edu in UserTypes">
-                                    <div compile="edu.Permission | highlight: $select.search"></div>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                        <input type="password" ng-model="user.pass" ng-minlength="1"
+                        <input type="password" ng-model="phone.pass" ng-minlength="1"
                                class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="پسورد">
-                        <input type="password" ng-model="user.passRe" ng-minlength="1"
+                        <input type="password" ng-model="phone.passRe" ng-minlength="1"
                                class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="تکرار پسورد">
-                        <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertNewUser()" style="margin-top:20px">افزودن</button>
+                        <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertNewPhone()" style="margin-top:20px">افزودن</button>
                     </div>
                 </div><!-- /.box-body -->
             </div><!-- /.box -->

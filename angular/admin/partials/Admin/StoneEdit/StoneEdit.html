@@ -1,0 +1,145 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small> سنگ</small>
+        ویرایش
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">ویرایش سنگ</li>
+    </ol>
+</section>
+
+<section class="row">
+    <div class="col-xs-12">
+        <div class="col-xs-12 pull-right">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font">ویرایش سنگ</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <img id="stoneImage" class="img-responsive pad" alt="Photo">
+                    <div class="row"><hr></div>
+                    <div class="row persian-rtl">
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                                نام سنگ
+                            </div>
+                            <div class="col-xs-8">
+                                <ui-select ng-model="StoneType.selected" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match  placeholder="اسم سنگ">{{StoneType.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="type in StoneTypes">
+                                    <div compile="type.Name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                               ماشین تولید کننده
+                            </div>
+                            <div class="col-xs-8">
+                                <ui-select ng-model="Machine.selected" on-select="search()" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match  placeholder="ماشین تولید کننده">{{Machine.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in machines">
+                                    <div compile="edu.Name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                                شماره اسلب
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="number" name="table_search" ng-model="stone.CopeNumber"
+                                       class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                       placeholder="شماره اسلب">
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                                 عرض
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="number" name="table_search" ng-model="stone.Height"
+                                       class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                       placeholder="عرض میلی متر">
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                                طول                            </div>
+                            <div class="col-xs-8">
+                                <input type="number" name="table_search" ng-model="stone.Width"
+                                       class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                       placeholder="طول میلی متر">
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                                مساحت                            </div>
+                            <div class="col-xs-8">
+                                <input type="number" name="table_search" ng-model="stone.Area"
+                                       class="form-control input-sm ng-pristine ng-valid ng-empty ng-touched"
+                                       placeholder="مساحت میلی متر">
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">وضعیت</div>
+                            <div class="col-xs-8">
+                                <ui-select ng-model="StoneState.selected" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match  placeholder="وضعیت">{{StoneState.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in StoneStates">
+                                    <div compile="edu.Name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">
+                                 جهت بوک مچ                            </div>
+                            <div class="col-xs-8">
+                                <ui-select ng-model="Direction.selected"  theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match  placeholder=" جهت بوک مچ">{{Direction.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in Directions">
+                                    <div compile="edu.Name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">توضیحات</div>
+                            <div class="col-xs-8">
+                                <textarea rows="4" style="width: 100%;resize: none" ng-model="stone.Description">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-4 pull-right">کد سنگ خام</div>
+                            <div class="col-xs-8">
+                                <ui-select ng-model="CopeType.selected" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match  placeholder="وضعیت">{{CopeType.selected.CopeName}}</ui-select-match>
+                                <ui-select-choices repeat="edu in copeTypes">
+                                    <div compile="edu.CopeName | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group col-xs-12">
+                            <div class="col-xs-12">
+                                <a ng-click="editStone()" class="btn btn-info btn-sm pull-left">ویرایش</a>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>
+
+
+
+

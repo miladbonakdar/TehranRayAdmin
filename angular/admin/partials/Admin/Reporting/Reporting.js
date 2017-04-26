@@ -2,67 +2,68 @@
 angular.module(appName).controller('ReportingCtrl', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, $stateParams, $uibModal, Extention) {
     $scope.pagingParams = { Position: null };
     $scope.pagingController = {};
-    $scope.users = [];
-    $scope.Position= {selected : null};
-    $scope.Forum= {selected : null};
-    $scope.Forums= [];
+    $scope.Machine ={selected :null};
+    $scope.StoneType ={selected :[]};
+    $scope.StoneState ={selected :null};
+    $scope.machines = [{
+        Name : "ماشین A",
+        ID : "1"
+    },{
+        Name : "ماشین B",
+        ID : "2"
+    }];
 
-    Extention.postAsync('getAllPositions', {}).then(function (msg) {
-        $scope.allPositions = msg;
-    });
-    Extention.postAsync('getAllForumTypes', {}).then(function (msg) {
-        $scope.Forums = msg.Data;
-    });
+    $scope.StoneStates = [{
+        Name : "فروخته شده",
+        ID : "2"
+    },{
+        Name : "موجود",
+        ID : "1"
+    }];
 
+    if($rootScope.user.AdminPermissionLevel =='viewStones'){
+        $scope.StoneState.selected = $scope.StoneStates[1];
+    }
+
+    Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
+        $scope.StoneTypes = msg.Data;
+    });
     $scope.search = function () {
+        $scope.pagingParams.MachineID = ($scope.Machine.selected) ? $scope.Machine.selected.ID : null;
+        $scope.pagingParams.StoneStateID = ($scope.StoneState.selected) ? $scope.StoneState.selected.ID : null;
+        if($scope.Height){
+            $scope.pagingParams.Height = Number($scope.Height)*10;
+        }
+        if($scope.Width){
+            $scope.pagingParams.Width = Number($scope.Width)*10;
+        }
+        if($scope.Area){
+            $scope.pagingParams.Area = $scope.Area*1000000;
+        }
+        if($scope.EndDate){
+            var EndDate = new Date($scope.toFullEnd.unix);
+            $scope.pagingParams.EndDate  = EndDate;
+        }
+        if($scope.StartDate){
+            var StartDate = new Date($scope.toFullStart.unix);
+            $scope.pagingParams.StartDate  = StartDate;
+        }
+
+        if($scope.StoneType.selected.length > 0){
+            $scope.pagingParams.StoneTypeID = "("+$scope.StoneType.selected[0].StoneTypeID;
+            for(var i = 1 ; i < $scope.StoneType.selected.length ; i++){
+                $scope.pagingParams.StoneTypeID += ","+$scope.StoneType.selected[i].StoneTypeID;
+            }
+            $scope.pagingParams.StoneTypeID += ")";
+        }else
+            $scope.pagingParams.StoneTypeID = null;
         $scope.pagingController.update();
     }
 
-    $scope.changeForum = function () {
-        $scope.pagingParams.ForumMainSubjectID = ($scope.Forum.selected) ? $scope.Forum.selected.ID : null;
-        $scope.search();
-    }
-    $scope.changePosition = function () {
-        $scope.pagingParams.OrganizationID = ($scope.Position.selected) ? $scope.Position.selected.ID : null;
-        $scope.search();
-    }
-
-    $scope.getBGColor = function(id) {
-        id = id % 15 + 1;
-        switch (id) {
-            case 1:
-                return 'bg-red-active';
-            case 2:
-                return 'bg-yellow-active';
-            case 3:
-                return 'bg-aqua-active';
-            case 4:
-                return 'bg-blue-active';
-            case 5:
-                return 'bg-light-blue-active';
-            case 6:
-                return 'bg-green-active';
-            case 7:
-                return 'bg-navy-active';
-            case 8:
-                return 'bg-teal-active';
-            case 9:
-                return 'bg-olive-active';
-            case 10:
-                return 'bg-lime-active';
-            case 11:
-                return 'bg-orange-active';
-            case 12:
-                return 'bg-fuchsia-active';
-            case 13:
-                return 'bg-purple-active';
-            case 14:
-                return 'bg-maroon-active';
-            case 15:
-                return 'bg-black-active';
-            default:
-                return 'bg-red-active';
-        }
+    $scope.getStoneImage = function (id , image) {
+        $timeout(function () {
+            document.getElementById("stoneImage"+id).setAttribute("src","data:image/png;base64,"+image);
+        })
     }
 
     activeElement('#SReporting','#SPersonReport');

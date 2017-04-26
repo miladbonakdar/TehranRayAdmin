@@ -1,0 +1,96 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small> سنگ ها</small>
+        مدیریت
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active"> لیست سنگ ها</li>
+    </ol>
+</section>
+
+<section class="row">
+    <div class="col-xs-12">
+        <div class="col-xs-12 pull-right">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font">سنگ ها </h3>
+                    <h3 class="box-title vazir-font pull-left">تعداد کل {{allTotal | pNumber}}</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding"  ng-show="stones.length !=0">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th>کد سنگ</th>
+                                <th>نام</th>
+                                <th>شماره اسلب</th>
+                                <th  ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">ماشین</th>
+                                <th  ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">تاریخ تولید</th>
+                                <th  ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">ساعت</th>
+                                <th  ng-if="user.AdminPermissionLevel =='viewStones'">طول</th>
+                                <th  ng-if="user.AdminPermissionLevel =='viewStones'">عرض</th>
+                                <th>وضعیت</th>
+                                <th>مساحت تقریبی</th>
+                                <th style="width: 150px;"></th>
+                            </tr>
+                            <tr ng-repeat="u in stones">
+                                <td>{{u.StoneID | pNumber}}</td>
+                                <td>{{u.Name | pNumber}}</td>
+                                <td>
+                                    {{u.CopeNumber | pNumber}}
+                                </td>
+                                <td ng-switch="u.MachineNumber"  ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
+                                    <span class="label label-success" ng-switch-when="1">A</span>
+                                    <span class="label label-danger" ng-switch-when="2">B</span>
+                                </td>
+                                <td ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">{{u.CreationDate | jalaliDate :'jYYYY/jMM/jDD' | pNumber}}</td>
+                                <td ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">{{u.CreationDate | Time | pNumber}}</td>
+                                <td ng-switch="u.MachineNumber"  ng-if="user.AdminPermissionLevel =='viewStones'">
+                                    {{u.Width | Length| pNumber}}
+                                </td>
+                                <td ng-switch="u.MachineNumber"  ng-if="user.AdminPermissionLevel =='viewStones'">
+                                    {{u.Height | Length | pNumber}}
+                                </td>
+                                <td ng-switch="u.Sold">
+                                    <span class="label label-success" ng-switch-when="0">موجود</span>
+                                    <span class="label label-danger" ng-switch-when="1">فروخته شده</span>
+                                </td>
+                                <td class="persian-rtl">
+                                    {{u.Area | Volume |pNumber}}<span class="pull-right"></span>
+                                </td>
+                                <td>
+                                    <div class="table-action-icons">
+                                        <a ng-if="user.AdminPermissionLevel =='Base'" ui-sref="stone_edit({id:u.StoneID})"><i class="fa fa-pencil text-green link hvr-grow" title="ویرایش سنگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"></i></a>
+                                        <i ng-if="user.AdminPermissionLevel =='Base'" confirm="آیا مطمئن هستید که میخواهید این سنگ را حذف کنید؟"
+                                               class="fa fa-trash text-red link hvr-grow" ng-click="removeStone(u.StoneID)" title="حذف سنگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true">
+                                        </i>
+                                       <a ui-sref="stone_page({id:u.StoneID})"><i class="fa fa-eye text-blue link hvr-grow" title="مشاهده سنگ" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div><!-- /.box-body -->
+                <div ng-hide="stones.length !=0" class="text-center">
+                    <h4 class="text-muted">موردی یافت نشد</h4>
+                </div>
+                <div class="box-footer clearfix text-center">
+                    <auto-paging page="1"
+                                 page-size="30"
+                                 ul-class="pagination pagination-sm no-margin"
+                                 action-name="getAllStones"
+                                 data-params="pagingParams"
+                                 ng-control="pagingController"
+                                 total-items="allTotal"
+                                 items="stones">
+                    </auto-paging>
+                </div>
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>
+
+
+
+

@@ -1,0 +1,110 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small> همه سنگ های خام</small>
+        مدیریت
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">همه سنگ های خام</li>
+    </ol>
+</section>
+
+
+<section class="row">
+    <div class="col-xs-12">
+
+        <div class="col-sm-3 col-xs-12 pull-left">
+            <div class="box box-success">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font">افزودن سنگ خام جدید</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <div class="form-group text-right col-xs-12">
+                        <input type="text" ng-model="cope.CopeName" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="کد سنگ خام">
+                        <input type="text" ng-model="cope.Weight" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="وزن (تن)">
+                        <input type="text" ng-model="cope.UnitPrice" ng-minlength="1"
+                               class="form-control col-xs-12 persian-rtl" style="margin-top: 20px;" placeholder="قیمت واحد(هزار تومان)">
+                        <div class="col-xs-12 persian-rtl no-padding" style="margin-top: 20px;">
+                            <ui-select ng-model="StoneType.selected" theme="bootstrap" sortable="true" close-on-select="true">
+                                <ui-select-match allow-clear placeholder="نوع سنگ">{{StoneType.selected.Name}}</ui-select-match>
+                                <ui-select-choices repeat="edu in StoneTypes">
+                                    <div compile="edu.Name | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <button class="form-control col-xs-12 btn btn-sm btn-block btn-success" ng-click="insertCope()" style="margin-top:20px">{{(cope.CopeID)?'ویرایش':'افزودن'}}</button>
+                        <button ng-show="cope.CopeID" class="form-control col-xs-12 btn btn-sm btn-block btn-danger" ng-click="cancleEdite()" style="margin-top:20px">{{'انصراف'}}</button>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+        <div class="col-sm-9  col-xs-12 pull-right">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font"> سنگ های خام </h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr>
+                            <th>کد سنگ خام</th>
+                            <th>تاریخ ورود</th>
+                            <th>نوع سنگ</th>
+                            <th>تعداد اسلب ها</th>
+                            <th>بوک مچ</th>
+                            <th>وزن</th>
+                            <th>قیمت واحد</th>
+                            <th></th>
+                        </tr>
+                        <tr ng-repeat="u in tags">
+                            <td>{{u.CopeName | pNumber}}</td>
+                            <td>
+                                {{u.CreationDate | jalaliDate :'jYYYY/jMM/jDD'  | pNumber}}
+                            </td>
+                            <td>
+                                {{u.Name | pNumber}}
+                            </td>
+                            <td ng-switch="u.StoneCount">
+                                <span class="label label-danger" ng-switch-when="0">بریده نشده</span>
+                                <span class="label label-success" ng-switch-default="">
+                                {{u.StoneCount | pNumber}}</span>
+                            </td>
+                            <td ng-switch="u.BockMatching">
+                                <span class="label label-success" ng-switch-when="0">دارد</span>
+                                <span class="label label-danger" ng-switch-when="1">ندارد</span>
+                            </td>
+                            <td>
+                                {{u.Weight | Weight | pNumber}}
+                            </td>
+                            <td>
+                                {{u.UnitPrice | Toman | pNumber}}
+                            </td>
+                            <td>
+                                <div class="table-action-icons">
+                                    <i confirm="آیا مطمئن هستید که میخواهید این سنگ خام را حذف کنید؟"
+                                       class="fa fa-trash text-red link hvr-grow" ng-click="deleteCope(u.CopeID)" title="حذف سنگ خام" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true"></i>
+                                    <i class="fa fa-pencil text-green link hvr-grow" ng-click="editCope(u)" title="ویرایش" data-toggle="tooltip" data-placement="top" tooltip="Tooltip on left" tooltip-placement="top" tooltip-class="vazir-font" tooltip-append-to-body="true">
+                                    </i>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix text-center">
+                    <auto-paging page="1"
+                                 page-size="20"
+                                 ul-class="pagination pagination-sm no-margin"
+                                 action-name="getAllCopes"
+                                 data-params="pagingParams"
+                                 ng-control="pagingController"
+                                 items="tags">
+                    </auto-paging>
+                </div>
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>

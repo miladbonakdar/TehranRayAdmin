@@ -37,7 +37,7 @@
 
 <section class="row">
     <div class="col-xs-12">
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-12 col-xs-12">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="link" ng-class="(activeTab == 2)?'active':''">
@@ -147,27 +147,6 @@
                     </div><!-- /.tab-pane -->
                 </div><!-- /.tab-content -->
             </div>
-        </div>
-        <div class="col-md-3 col-xs-12">
-            <!-- Profile Image -->
-            <div class="box box-primary">
-                <div class="box-body box-profile">
-                    <img class="profile-user-img img-responsive img-circle" ng-src="{{user.Image}}"
-                         err-src="../images/Avatar.jpg"
-                         alt="User profile picture">
-                    <h3 class="profile-username text-center">{{::curUser.FullName}}</h3>
-                        <label class="col-sm-12 control-label btn-block text-center" for="inputFile">تصویر پروفایل</label>
-                        <!--<input class="col-sm-9 control-label" type="file" id="exampleInputFile">-->
-                        <div class="col-sm-12 text-center">
-                                <span class="btn btn-primary btn-file btn-block link">
-                    انتخاب فایل  <input type="file" id="inputFile" ngf-select ng-model="avatarFile" name="file"
-                                        accept="image/*" ngf-max-size="3000KB" required
-                                        ngf-model-invalid="errorFile" ngf-multiple="false"
-                                        ngf-change="onChangeAvatar($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
-                                </span>
-                        </div>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
         </div>
     </div>
 </section>

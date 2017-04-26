@@ -49,6 +49,8 @@ class Pagination {
 
 			$items = [];
 			while($r = $q->fetch_assoc()){
+			    if(isset($r["Image"]))
+                    $r["Image"] = base64_encode($r["Image"]);
 				$items[] = $r;
 			}
 

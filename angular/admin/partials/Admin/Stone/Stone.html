@@ -1,0 +1,161 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1 class="content-header vazir-font">
+        <small> سنگ</small>
+        مشاهده
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#/dashboard"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">سنگ</li>
+    </ol>
+</section>
+
+<section class="row">
+    <div class="col-xs-12">
+        <div class="col-xs-12 pull-right">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title vazir-font">سنگ</h3>
+                    <a ng-if="user.AdminPermissionLevel =='Base'" ui-sref="stone_edit({id:stone.StoneID})" class="btn btn-success btn-sm pull-left">ویرایش سنگ</a>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <img id="stoneImage" class="img-responsive pad" alt="Photo">
+                    <div class="row"><hr></div>
+                    <div class="row persian-rtl">
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-5 pull-right">
+                                نام سنگ
+                            </div>
+                            <div class="col-xs-7">
+                                <a>{{stone.Name | pNumber}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-5 pull-right">
+                                کد سنگ
+                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.StoneID | pNumber}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                            <div class="col-xs-5 pull-right">
+                               ماشین تولید کننده
+                            </div>
+                            <div class="col-xs-7">
+                                <a ng-switch="stone.MachineNumber">
+                                    <span class="label label-success" ng-switch-when="1">A</span>
+                                    <span class="label label-danger" ng-switch-when="2">B</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-5 pull-right">
+                                شماره اسلب
+                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.CopeNumber | pNumber}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-5 pull-right">
+                                 عرض
+                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.Height | Length| pNumber}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-5 pull-right">
+                                طول                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.Width | Length | pNumber}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <div class="col-xs-5 pull-right">
+                                مساحت                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.Area | Volume| pNumber}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6"  ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
+                            <div class="col-xs-5 pull-right">
+                                حجم عکس                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.ImageSize | fileSizeFilter }}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                            <div class="col-xs-5 pull-right">
+                                 تاریخ تولید                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.CreationDate | jalaliDate :'jYYYY/jMM/jDD' | pNumber }}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                            <div class="col-xs-5 pull-right">
+                                ساعت تولید                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.CreationDate | Time | pNumber }}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                            <div class="col-xs-5 pull-right">وضعیت</div>
+                            <div class="col-xs-7">
+                                <a ng-switch="stone.Sold">
+                                    <span class="label label-success" ng-switch-when="0">موجود</span>
+                                    <span class="label  label-danger" ng-switch-when="1">فروخته شده</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6" ng-if="stone.BockMachDirection">
+                            <div class="col-xs-5 pull-right">
+                                 جهت بوک مچ                            </div>
+                            <div class="col-xs-7">
+                                <a>                               {{stone.BockMachDirection}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6" ng-if="stone.BockMachDirection">
+                            <div class="col-xs-5 pull-right">سنگ بوک مچ</div>
+                            <div class="col-xs-7">
+                                <a ng-if="stone.BookMatchStoneID2" ui-sref="stone_page({id:stone.BookMatchStoneID2})" class="btn btn-primary btn-sm pull-right">سنگ بوک مچ</a>
+                                <a ng-if="stone.BookMatchStoneID1" ui-sref="stone_page({id:stone.BookMatchStoneID1})" class="btn btn-primary btn-sm pull-right">سنگ بوک مچ</a>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6" ng-if="user.AdminPermissionLevel =='Base'">
+                            <div class="col-xs-5 pull-right">کد سنگ خام</div>
+                            <div class="col-xs-7">
+                                <a>
+                                    {{stone.CopeName}}
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group col-xs-12">
+                            <div class="col-xs-12">
+                                <a ng-if="stone.PreviousStoneID" ui-sref="stone_page({id:stone.PreviousStoneID})" class="btn btn-info btn-sm pull-left">سنگ قبلی</a>
+                                <a ng-if="stone.NextStoneID" ui-sref="stone_page({id:stone.NextStoneID})" class="btn btn-info btn-sm pull-right">سنگ بعدی</a>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+</section>
+
+
+
+
