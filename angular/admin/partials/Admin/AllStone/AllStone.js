@@ -18,4 +18,5 @@ angular.module(appName).controller('AllStoneCtrl', function ($scope, $rootScope,
 		});
 	}
 	activeElement('#SStone');
+
 });

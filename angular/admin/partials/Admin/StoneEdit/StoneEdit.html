@@ -120,7 +120,7 @@
                             <div class="col-xs-4 pull-right">کد سنگ خام</div>
                             <div class="col-xs-8">
                                 <ui-select ng-model="CopeType.selected" theme="bootstrap" sortable="true" close-on-select="true">
-                                <ui-select-match  placeholder="وضعیت">{{CopeType.selected.CopeName}}</ui-select-match>
+                                <ui-select-match  placeholder="کد سنگ خام">{{CopeType.selected.CopeName}}</ui-select-match>
                                 <ui-select-choices repeat="edu in copeTypes">
                                     <div compile="edu.CopeName | highlight: $select.search"></div>
                                 </ui-select-choices>

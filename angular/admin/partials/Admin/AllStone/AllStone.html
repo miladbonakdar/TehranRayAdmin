@@ -43,13 +43,14 @@
                                 <td ng-switch="u.MachineNumber"  ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
                                     <span class="label label-success" ng-switch-when="1">A</span>
                                     <span class="label label-danger" ng-switch-when="2">B</span>
+                                    <span class="label label-info" ng-switch-when="3">C</span>
                                 </td>
                                 <td ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">{{u.CreationDate | jalaliDate :'jYYYY/jMM/jDD' | pNumber}}</td>
                                 <td ng-if="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">{{u.CreationDate | Time | pNumber}}</td>
-                                <td ng-switch="u.MachineNumber"  ng-if="user.AdminPermissionLevel =='viewStones'">
+                                <td  ng-if="user.AdminPermissionLevel =='viewStones'">
                                     {{u.Width | Length| pNumber}}
                                 </td>
-                                <td ng-switch="u.MachineNumber"  ng-if="user.AdminPermissionLevel =='viewStones'">
+                                <td  ng-if="user.AdminPermissionLevel =='viewStones'">
                                     {{u.Height | Length | pNumber}}
                                 </td>
                                 <td ng-switch="u.Sold">

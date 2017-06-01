@@ -132,6 +132,12 @@
                             <span>سنگ ها</span>
                         </a>
                     </li>
+                    <li class="treeview" id="SAddStone" ng-if="user.AdminPermissionLevel =='Base'">
+                        <a ui-sref="addStone">
+                            <i class="fa fa-plus"></i>
+                            <span>افزودن سنگ</span>
+                        </a>
+                    </li>
                     <li class="treeview" id="SStoneType" ng-if="user.AdminPermissionLevel =='Base'">
                         <a ui-sref="stone_types">
                             <i class="fa fa-database"></i>

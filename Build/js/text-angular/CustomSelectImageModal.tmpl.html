@@ -1,0 +1,81 @@
+
+
+<div class="modal-header vazir-font text-right">
+    <h3 class="modal-title text-danger">انتخاب تصویر</h3>
+</div>
+<div class="modal-body vazir-font text-right">
+
+    <div class="nav-tabs-custom" style="margin-bottom: 0">
+        <ul class="nav nav-tabs">
+            <li class="link" ng-class="(activeTab == 0)?'active':''">
+                <a ng-click="getTab(0)" data-toggle="tab" aria-expanded="false">
+                    آپلود تصویر
+                </a>
+            </li>
+            <li class="link" ng-class="(activeTab == 1)?'active':''">
+                <a ng-click="getTab(1)" data-toggle="tab" aria-expanded="true">
+                    لینک تصویر
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane" ng-class="(activeTab == 0)?'active':''"  >
+                <div class="row">
+
+                    <div class="text-center" style="height: 200px" ng-show="!myFile">
+
+                        <span class="btn btn-primary btn-file"
+                          style="margin-top: 75px" >
+            انتخاب تصویر  <input type="file" id="inputFile" ngf-select name="file"
+                                 ngf-max-size="80MB"
+                                 ngf-model-invalid="errorFile"
+                                 ng-model="myFile"
+                                 ngf-accept="'image/*'"
+                                 ngf-change="filesChanged($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)">
+                        </span>
+                    </div>
+                    <div class="text-center col-xs-12 persian-rtl" ng-show="myFile">
+                        <div style="margin-top: 10px">
+
+                            <div class="progress progress-sm" style="width:90%;float:left;margin-top: 6px;"
+                                 ng-class="(myFile.uploadState == 0)? 'active':''">
+                                <div class="progress-bar"
+                                     role="progressbar" aria-valuenow="20" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: {{f.percent}}%"
+                                     ng-class="(myFile.uploadState == 0)?'progress-bar-striped progress-bar-warning'
+                                                :' progress-bar-success'">
+                                </div>
+                            </div>
+                            <div style="width: 10%;position: absolute; float:right;text-align: right">
+                                {{myFile.percent || '0' | pNumber}}<span class="english-font">%</span>
+                            </div>
+                        </div>
+                        <br>
+                        <p class="text-center" style="margin-top:10px">
+                            تصویر در حال آپلود شدن است ، لطفا کمی صبر کنید ...
+                        </p>
+                        <button class="btn btn-small btn-danger" ng-click="stopUploadImage(myFile)">
+                            توقف آپلود تصویر
+                        </button>
+                        <!--<div class="" style="width: 100px">-->
+                        <!--<img ngf-thumbnail="myFile" class="img-responsive" style="width: 100%">-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div><!-- /.tab-pane -->
+            <div class="tab-pane" ng-class="(activeTab == 1)?'active':''" >
+                <div class="text-center">
+                    <input class="form-control english-text" ng-model="imageLink" placeholder="Image link ..." />
+                    <button class="btn btn-success" ng-click="addImageLink(imageLink)" style="margin-top:10px">
+                        افزودن
+                        تصویر
+                    </button>
+                </div>
+            </div><!-- /.tab-pane -->
+        </div><!-- /.tab-content -->
+    </div>
+
+</div>
+<div class="modal-footer vazir-font">
+    <button class="btn btn-info pull-left" type="button" ng-click="cancel()">بستن</button>
+</div>

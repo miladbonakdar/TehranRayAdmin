@@ -134,15 +134,26 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
         }
     })
         .state("cope", {
-        url: "/Cope",
-        templateUrl: "angular.partial.Cope.html",
-        controller: 'CopeCtrl',
+            url: "/Cope",
+            templateUrl: "angular.partial.Cope.html",
+            controller: 'CopeCtrl',
+            resolve: {
+                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([]);
+                }],
+                $title: function () {
+                    return 'مدیریت سنگ های خام';
+                }
+            }}).state("addStone", {
+        url: "/AddStone",
+        templateUrl: "angular.partial.AddStone.html",
+        controller: 'AddStoneCtrl',
         resolve: {
             deps: ['$ocLazyLoad', function ($ocLazyLoad) {
                 return $ocLazyLoad.load([]);
             }],
             $title: function () {
-                return 'مدیریت سنگ های خام';
+                return 'افزودن سنگ جدید';
             }
         }});
     // }).state("award_questions", {

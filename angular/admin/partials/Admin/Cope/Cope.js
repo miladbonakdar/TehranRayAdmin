@@ -8,6 +8,7 @@ angular.module(appName).controller('CopeCtrl', function ($scope, $rootScope, $ro
 
     Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
         $scope.StoneTypes = msg.Data;
+        console.log(msg);
     });
 
     $scope.search = function () {
@@ -26,27 +27,6 @@ angular.module(appName).controller('CopeCtrl', function ($scope, $rootScope, $ro
         $scope.cope = {};
         $scope.StoneType.selected = null;
     }
-    $scope.insertNewUser= function() {
-
-        if (!$scope.user.FullName || $scope.user.FullName.length < 3) {Extention.popError('نام کامل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.Email || $scope.user.Email.length < 3) {Extention.popError('ایمیل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.Username || $scope.user.Username.length < 3) {Extention.popError('نام کاربری وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.pass || $scope.user.pass.length < 3) {Extention.popError('پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.passRe || $scope.user.passRe.length < 3) {Extention.popError('تکرار پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.UserType.selected) {Extention.popError('نوع کاربر را انتخاب کنید');return}
-        if ($scope.user.passRe != $scope.user.pass) {Extention.popError('پسورد با تکرار آن برابر نیست');return}
-        $scope.user.PermissionID = $scope.UserType.selected.AdminPermissionID;
-        Extention.post('savePerson', $scope.user).then(function (res) {
-            console.log(res);
-            if (res && res.Status == 'success') {
-                Extention.popSuccess(res.Data);
-                $scope.user ={};
-                $scope.pagingController.update();
-            } else {
-                Extention.popError(res.Message);
-            }
-        });
-    }
 
     $scope.insertCope= function() {
         if (!$scope.cope.CopeName || $scope.cope.CopeName.length < 3) {Extention.popError('کد سنگ خام را وارد کنید');return}
@@ -61,7 +41,7 @@ angular.module(appName).controller('CopeCtrl', function ($scope, $rootScope, $ro
                 $scope.StoneType.selected = null;
                 $scope.pagingController.update();
             } else {
-                Extention.popError("مشکل در وارد کردن سنگ خام ، لطفا دوباره تلاش کنید.");
+                Extention.popError(res.Message);
             }
         });
     }

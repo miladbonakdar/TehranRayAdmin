@@ -3,6 +3,10 @@ $app->post('/insertOrEditCope', function() use ($app)  {
 
     $data = json_decode($app->request->getBody());
     checkUserPemision($app);
+    $stone = $app->db->getOneRecord("SELECT * FROM cope c WHERE c.CopeName='".$data->CopeName."'");
+    if($stone["CopeID"] && !isset($data->CopeID)){
+        echoError("نام سنگ خام تکراری است");
+    }
     if(isset($data->CopeID)){
         $app->db->updateRecord('cope',"CopeName='".$data->CopeName."',Weight='".$data->Weight
             ."',UnitPrice='".$data->UnitPrice."',StoneTypeID='".$data->StoneTypeID."'",
@@ -414,4 +418,22 @@ $app->post('/editStone', function() use ($app)  {
             "StoneID='$data->StoneID'");
         echoSuccess(' سنگ ویرایش شد');
 });
+$app->post('/addStone', function() use ($app)  {
+    $data = json_decode($app->request->getBody());
+    checkUserPemision($app);
+    $app->db->insertToTable('stone','StoneTypeID,Width,Height,Description,Area,CopeID,CopeNumber,Sold,BockMachDirection,MachineNumber,CreationDate',
+        "'".$data->StoneTypeID
+        ."','".$data->Width
+        ."','".$data->Height
+        ."','".$data->Description
+        ."','".$data->Area
+        ."','".$data->CopeID
+        ."','".$data->CopeNumber
+        ."','".$data->Sold
+        ."','".$data->BockMachDirection
+        ."','".$data->MachineNumber
+        ."',now()");
+    echoSuccess(' سنگ اضافه شد');
+});
+
 ?>

@@ -134,15 +134,26 @@ function ($provide, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider,ADMd
         }
     })
         .state("cope", {
-        url: "/Cope",
-        templateUrl: "angular.partial.Cope.html",
-        controller: 'CopeCtrl',
+            url: "/Cope",
+            templateUrl: "angular.partial.Cope.html",
+            controller: 'CopeCtrl',
+            resolve: {
+                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([]);
+                }],
+                $title: function () {
+                    return 'مدیریت سنگ های خام';
+                }
+            }}).state("addStone", {
+        url: "/AddStone",
+        templateUrl: "angular.partial.AddStone.html",
+        controller: 'AddStoneCtrl',
         resolve: {
             deps: ['$ocLazyLoad', function ($ocLazyLoad) {
                 return $ocLazyLoad.load([]);
             }],
             $title: function () {
-                return 'مدیریت سنگ های خام';
+                return 'افزودن سنگ جدید';
             }
         }});
     // }).state("award_questions", {
@@ -1072,6 +1083,7 @@ angular.module(appName).controller('AllStoneCtrl', ['$scope', '$rootScope', '$ro
 		});
 	}
 	activeElement('#SStone');
+
 }]);
 
 angular.module(appName).controller('CopeCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', 'Extention', '$uibModal', function ($scope, $rootScope, $routeParams, $state, $location, $timeout, Extention , $uibModal) {
@@ -1083,6 +1095,7 @@ angular.module(appName).controller('CopeCtrl', ['$scope', '$rootScope', '$routeP
 
     Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
         $scope.StoneTypes = msg.Data;
+        console.log(msg);
     });
 
     $scope.search = function () {
@@ -1101,27 +1114,6 @@ angular.module(appName).controller('CopeCtrl', ['$scope', '$rootScope', '$routeP
         $scope.cope = {};
         $scope.StoneType.selected = null;
     }
-    $scope.insertNewUser= function() {
-
-        if (!$scope.user.FullName || $scope.user.FullName.length < 3) {Extention.popError('نام کامل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.Email || $scope.user.Email.length < 3) {Extention.popError('ایمیل وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.Username || $scope.user.Username.length < 3) {Extention.popError('نام کاربری وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.pass || $scope.user.pass.length < 3) {Extention.popError('پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.user.passRe || $scope.user.passRe.length < 3) {Extention.popError('تکرار پسورد وارد نشده یا تعداد کاراکتر ها کم می باشد');return}
-        if (!$scope.UserType.selected) {Extention.popError('نوع کاربر را انتخاب کنید');return}
-        if ($scope.user.passRe != $scope.user.pass) {Extention.popError('پسورد با تکرار آن برابر نیست');return}
-        $scope.user.PermissionID = $scope.UserType.selected.AdminPermissionID;
-        Extention.post('savePerson', $scope.user).then(function (res) {
-            console.log(res);
-            if (res && res.Status == 'success') {
-                Extention.popSuccess(res.Data);
-                $scope.user ={};
-                $scope.pagingController.update();
-            } else {
-                Extention.popError(res.Message);
-            }
-        });
-    }
 
     $scope.insertCope= function() {
         if (!$scope.cope.CopeName || $scope.cope.CopeName.length < 3) {Extention.popError('کد سنگ خام را وارد کنید');return}
@@ -1136,7 +1128,7 @@ angular.module(appName).controller('CopeCtrl', ['$scope', '$rootScope', '$routeP
                 $scope.StoneType.selected = null;
                 $scope.pagingController.update();
             } else {
-                Extention.popError("مشکل در وارد کردن سنگ خام ، لطفا دوباره تلاش کنید.");
+                Extention.popError(res.Message);
             }
         });
     }
@@ -1581,6 +1573,79 @@ angular.module(appName).controller('StoneCtrl', ['$scope', '$rootScope', '$route
             }
         });
     })();
+}]);
+
+angular.module(appName).controller('AddStoneCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$stateParams', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout,$stateParams, Extention) {
+	$scope.stone = null;
+    $scope.Machine ={selected :null};
+    $scope.Direction ={selected :null};
+    $scope.StoneType ={selected :null};
+    $scope.CopeType ={selected :null};
+    $scope.StoneState ={selected :null};
+    $scope.machines = [{
+        Name : "ماشین A",
+        ID : "1"
+    },{
+        Name : "ماشین B",
+        ID : "2"
+    },{
+        Name : "ماشین C",
+        ID : "3"
+    }];
+
+    $scope.Directions = [{
+        Name : "بدون بوک مچ",
+        Value : ""
+    },{
+        Name : "چپ",
+        Value : "LEFT"
+    },{
+        Name : "راست",
+        Value : "RIGHT"
+    }];
+
+    $scope.StoneStates = [{
+        Name : "فروخته شده",
+        ID : "2"
+    },{
+        Name : "موجود",
+        ID : "1"
+    }];
+    Extention.postAsync('getAllStoneTypes', {}).then(function (msg) {
+        $scope.StoneTypes = msg.Data;
+    });
+
+    Extention.postAsync('getAllCopeTypes', {}).then(function (msg) {
+        $scope.copeTypes = msg.Data;
+    });
+
+    $scope.addStone = function () {
+        if (!$scope.StoneType.selected) {Extention.popError('نوع سنگ را انتخاب کنید');return}
+        if (!$scope.Machine.selected) {Extention.popError('ماشین تولید کننده انتخاب نشده است');return}
+        if (!$scope.Direction.selected) {Extention.popError('جهت بوک مچ انتخاب نشده است');return}
+        if (!$scope.CopeType.selected) {Extention.popError('بلوک سنگ انتخاب نشده است');return}
+        if (!$scope.StoneState.selected) {Extention.popError('وضعیت سنگ انتخاب نشده است');return}
+        $scope.stone.StoneTypeID = $scope.StoneType.selected.StoneTypeID;
+        $scope.stone.MachineNumber = $scope.Machine.selected.ID;
+        $scope.stone.CopeID = $scope.CopeType.selected.CopeID;
+        $scope.stone.BockMachDirection = $scope.Direction.selected.Value;
+        $scope.stone.Sold = Number($scope.StoneState.selected.ID)-1;
+
+        var data =$scope.stone;
+        data.Image = null;
+        data.ImageSize = null;
+        Extention.post('addStone', data).then(function (res) {
+            if (res && res.Status == 'success') {
+                Extention.popSuccess(res.Data);
+                $state.go('stone');
+            } else {
+                console.log(res);
+                Extention.popError("مشکل در ویرایش سنگ ، لطفا دوباره تلاش کنید.");
+            }
+        });
+    }
+
+    activeElement('#SAddStone');
 }]);
 
 angular.module(appName).controller('StoneEditCtrl', ['$scope', '$rootScope', '$routeParams', '$state', '$location', '$timeout', '$stateParams', 'Extention', function ($scope, $rootScope, $routeParams, $state, $location, $timeout,$stateParams, Extention) {

@@ -1,0 +1,16 @@
+{
+  "name": "tehranReyAdmin",
+  "description": "tehran rey admin page",
+  "main": "index.js",
+  "authors": [
+    "milad bonakdar"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "forume"
+  ],
+  "homepage": "https://github.com/miladbonakdar/TehranRayAdmin",
+  "dependencies": {
+    "angular-nvd3": "^1.0.9"
+  }
+}

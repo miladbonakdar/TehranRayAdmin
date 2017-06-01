@@ -8,17 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/masoudrk/PHPForum.git"
+    "url": "git+https://milad74@gitlab.com/milad74/tehranray-admin-page.git"
   },
   "keywords": [
     "forume"
   ],
   "author": "milad bonakdar",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/masoudrk/PHPForum/issues"
-  },
-  "homepage": "https://github.com/masoudrk/PHPForum#readme",
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-angular-templates": "^1.1.0",
