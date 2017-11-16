@@ -27,7 +27,7 @@ $app->post('/soldStone', function() use ($app)  {
     if(!isset($data->SSN) || !isset($data->StoneID))
         echoError("اطلاعات نا معتبر است");
     checkValidUser($app->db , $data->SSN);
-    $resQ = $app->db->updateRecord('stone',"`Sold`='1'","stone.StoneID='$data->StoneID'");
+    $resQ = $app->db->updateRecord('stone',"`Sold`='1' , SoldDate= now()","stone.StoneID='$data->StoneID'");
     echoSuccess("سنگ فروخته شد");
 });
 
@@ -37,7 +37,7 @@ $app->post('/unsoldStone', function() use ($app)  {
     if(!isset($data->SSN) || !isset($data->StoneID))
         echoError("اطلاعات نا معتبر است");
     checkValidUser($app->db , $data->SSN);
-    $resQ = $app->db->updateRecord('stone',"`Sold`='0'","stone.StoneID='$data->StoneID'");
+    $resQ = $app->db->updateRecord('stone',"`Sold`='0' , SoldDate= NULL","stone.StoneID='$data->StoneID'");
     echoSuccess("سنگ به لیست بازگشت");
 });
 
@@ -50,7 +50,7 @@ $app->post('/soldStoneRange', function() use ($app)  {
     checkValidUser($app->db , $data->SSN);
     $stone = $app->db->getOneRecord("SELECT s.CopeID FROM Stone s WHERE s.StoneID = ".$data->StoneID);
 
-    $resQ = $app->db->updateRecord('stone',"`Sold`='1'","stone.CopeID=".$stone["CopeID"]." and stone.CopeNumber <= $data->EndSlab and stone.CopeNumber >= $data->StartSlab");
+    $resQ = $app->db->updateRecord('stone',"`Sold`='1' , SoldDate= now()","stone.CopeID=".$stone["CopeID"]." and stone.CopeNumber <= $data->EndSlab and stone.CopeNumber >= $data->StartSlab");
     echoSuccess("سنگ ها فروخته شدند");
 });
 ?>

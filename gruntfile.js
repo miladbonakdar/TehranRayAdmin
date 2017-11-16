@@ -43,7 +43,7 @@ module.exports = function(grunt) {
                         ,'javascript/ng-file-upload.min.js','javascript/angularpersian.min.js','javascript/treasure-overlay-spinner.js'
                         ,'javascript/ocLazyLoad.min.js','javascript/ui-bootstrap-tpls-1.2.5.min.js'
                         ,'javascript/select.min.js','javascript/textAngular-rangy.min.js','javascript/textAngular-sanitize.min.js'
-                        ,'javascript/textAngular.min.js'
+                        ,'javascript/textAngular.min.js','javascript/ng-csv.min.js'
                     ]
                 }
 

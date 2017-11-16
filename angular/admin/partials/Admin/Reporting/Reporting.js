@@ -5,6 +5,24 @@ angular.module(appName).controller('ReportingCtrl', function ($scope, $rootScope
     $scope.Machine ={selected :null};
     $scope.StoneType ={selected :[]};
     $scope.StoneState ={selected :null};
+    $scope.inputStoneID = {stoneID:null};
+
+    $scope.getStoneByID = function () {
+        if($scope.inputStoneID.stoneID){
+            Extention.post('checkStoneExist', {StoneID:$scope.inputStoneID.stoneID}).then(function (msg) {
+                if(msg.Data === 'OKEY'){
+                    $state.go('stone_page' , {id:$scope.inputStoneID.stoneID})
+                }else
+                {
+                    Extention.popError('سنگ مورد نظر پیدا نشد');
+                }
+            });
+        }else
+        {
+            Extention.popError('لطفا آی دی سنگ را وارد کنید');
+        }
+    }
+
     $scope.machines = [{
         Name : "ماشین A",
         ID : "1"

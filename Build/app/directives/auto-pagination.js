@@ -21,6 +21,7 @@
             //This variable defained for fetched items from database.
             items: '=',
             totalItems: '=?',
+            totalAreas: '=?',
             scrollToBegin :'=',
             lang : '@',
 
@@ -71,7 +72,8 @@
                     $scope.total = results.Total;
                     console.log(results);
                     $scope.totalItems = results.Total;
-
+                    if(results.report)
+                        $scope.totalAreas =results.report.totalAreas;
                     if($scope.returnFullResult)
                         $scope.fullResult = results;
 

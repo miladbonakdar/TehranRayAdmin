@@ -10,8 +10,437 @@
     </ol>
 </section>
     <!--<div class="row" ng-init="caclulateScores()">-->
-<div class="row">
+<style>
+.nv-legend-text{
+    visibility: collapse;
+}
+</style>
+<section class="content" ng-show="user.AdminPermissionLevel =='Base' || user.AdminPermissionLevel =='limitFuctionality'">
 
     <div class="col-xs-12">
+        <div class="box box-success">
+            <div class="box-header with-border">
+                <button class="btn btn-sm btn-primary pull-left persian-rtl" add-bom="UTF-8" csv-label="true"
+                        ng-csv="exelData" filename="Report.csv" csv-header="['Tehran', 'Rey', 'Stone']"> خروجی excel</button>
+                <h3 class="box-title vazir-font">فیلتر کردن اطلاعات جامع سنگ ها</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body persian-rtl">
+                <div class="row">
+                    <div class="col-xs-12" style="margin-bottom: 15px">
+
+                        <div class="col-md-5 col-xs-12 no-padding">
+                            <adm-dtp ng-model='countFilter.to'
+                                     options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                     full-data="countFilter.toFull" class="english-font"
+                                     mindate="{{countFilter.fromFull.unix}}"
+                                     on-datechange="updateCounts()"></adm-dtp>
+                        </div>
+                        <div class="hidden-xs  hidden-sm col-md-2 text-center" style="margin-top: 2px;">
+                            <i class="fa fa-angle-left fa-2x text-muted"></i>
+                        </div>
+                        <div class="hidden-md hidden-lg col-xs-12 text-center form-group" style="">
+                            <i class="fa fa-angle-down fa-2x text-muted"></i>
+                        </div>
+                        <div class="col-md-5 col-xs-12 no-padding">
+
+                            <adm-dtp ng-model='countFilter.from'
+                                     options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                     full-data="countFilter.fromFull" class="english-font"
+                                     maxdate="{{countFilter.toFull.unix}}"
+                                     on-datechange="updateCounts()"></adm-dtp>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
     </div>
-</div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua"><i class="fa fa-barcode"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد کل اسلب ها</span>
+                <span class="info-box-number text-right">{{count.Stone.totalStones | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-plus"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد اسلب های موجود</span>
+                <span class="info-box-number text-right">{{count.Stone.notSoldCount | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-minus"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد اسلب های</span>
+                <span class="info-box-text text-right">فروخته شده</span>
+                <span class="info-box-number text-right">{{count.Stone.soldCount | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-purple"><i class="fa fa-sitemap"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد کل بلوک</span>
+                <span class="info-box-number text-right">{{count.Cope.total | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-yellow"><i class="fa fa-scissors"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد بلوک بریده شده</span>
+                <span class="info-box-number text-right">{{count.Cope.cuttedCopes | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-teal"><i class="fa fa-arrows"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">متراژ کل اسلب ها</span>
+                <span class="info-box-number text-right">{{count.Stone.totalMetricStones | Volume2 | pNumber}}&nbsp; m<sup>2</sup></span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-maroon"><i class="fa fa-arrows-h"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">متراژ اسلب های موجود</span>
+                <span class="info-box-number text-right">{{count.Stone.notSoldMetricCount | Volume2 | pNumber}}&nbsp; m<sup>2</sup></span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-fuchsia"><i class="fa fa-arrows-v"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">متراژ اسلب های </span>
+                <span class="info-box-text text-right">فروخته شده</span>
+                <span class="info-box-number text-right">{{count.Stone.soldMetricCount | Volume2 | pNumber}}&nbsp; m<sup>2</sup></span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+
+    <div class="col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-bar-chart"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد اسلب های</span>
+                <span class="info-box-text text-right">دستگاه A</span>
+                <span class="info-box-number text-right">{{count.Stone.MachineACount | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-bar-chart"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">متراژ اسلب های </span>
+                <span class="info-box-text text-right">دستگاه A</span>
+                <span class="info-box-number text-right">{{count.Stone.MachineAArea | Volume2 | pNumber}}&nbsp; m<sup>2</sup></span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+
+    <div class="col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد اسلب های</span>
+                <span class="info-box-text text-right">دستگاه B</span>
+                <span class="info-box-number text-right">{{count.Stone.MachineBCount | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">متراژ اسلب های </span>
+                <span class="info-box-text text-right">دستگاه B</span>
+                <span class="info-box-number text-right">{{count.Stone.MachineBArea | Volume2 | pNumber}}&nbsp; m<sup>2</sup></span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-teal"><i class="fa fa-bar-chart"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">تعداد اسلب های</span>
+                <span class="info-box-text text-right">دستگاه C</span>
+                <span class="info-box-number text-right">{{count.Stone.MachineCCount | pNumber}}</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-teal"><i class="fa fa-bar-chart"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text text-right">متراژ اسلب های </span>
+                <span class="info-box-text text-right">دستگاه C</span>
+                <span class="info-box-number text-right">{{count.Stone.MachineCArea | Volume2 | pNumber}}&nbsp; m<sup>2</sup></span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="row">
+
+        <div class="col-sm-6 col-xs-12">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title vazir-font">نمودار تولید روزانه سنگ</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body persian-rtl">
+
+                    <div class="col-xs-12 no-padding pull-left">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <ui-select ng-model="SerialGraph.stoneType"
+                                           theme="bootstrap"
+                                           title="نوع سنگ"
+                                           on-select="updateNewQuestionDiagram()">
+                                    <ui-select-match placeholder="نوع سنگ" allow-clear="true">{{$select.selected.Name}}</ui-select-match>
+                                    <ui-select-choices repeat="t in data.stoneTypes track by $index">
+                                        <div ng-bind="t.Name" class="text-right"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-xs-12 no-padding pull-right">-->
+                    <!--<div class="form-group row">-->
+                    <!--<div class="col-xs-12">-->
+                    <!--<ui-select ng-model="newQuestionsDigram.MainSubject"-->
+                    <!--theme="bootstrap"-->
+                    <!--title="همه انجمن ها..."-->
+                    <!--on-select="updateNewQuestionDiagram()">-->
+                    <!--<ui-select-match placeholder="همه انجمن ها...">{{$select.selected.Title}}</ui-select-match>-->
+                    <!--<ui-select-choices repeat="t in dashboardData.MainSubjects track by $index">-->
+                    <!--<div ng-bind="t.Title" class="text-right"></div>-->
+                    <!--</ui-select-choices>-->
+                    <!--</ui-select>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <div class="col-xs-12 no-padding">
+                        <div class="col-md-5 col-xs-12 no-padding">
+                            <adm-dtp ng-model='SerialGraph.to'
+                                     options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                     full-data="SerialGraph.toFull" class="english-font"
+                                     mindate="{{SerialGraph.fromFull.unix}}"
+                                     on-datechange="updateNewQuestionDiagram()"></adm-dtp>
+                        </div>
+                        <div class="hidden-xs  hidden-sm col-md-2 text-center" style="margin-top: 2px;">
+                            <i class="fa fa-angle-left fa-2x text-muted"></i>
+                        </div>
+                        <div class="hidden-md hidden-lg col-xs-12 text-center form-group" style="">
+                            <i class="fa fa-angle-down fa-2x text-muted"></i>
+                        </div>
+                        <div class="col-md-5 col-xs-12 no-padding">
+
+                            <adm-dtp ng-model='SerialGraph.from'
+                                     options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                     full-data="SerialGraph.fromFull" class="english-font"
+                                     maxdate="{{SerialGraph.toFull.unix}}"
+                                     on-datechange="updateNewQuestionDiagram()"></adm-dtp>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 english-ltr" style="margin-top: 50px;">
+                            <serial-chart
+                                    chart-id="chart2"
+                                    chart-data="data.serialChart"
+                                    chart-graphs="dailyChartOptions"
+                                    enable-scroll-bar="true"
+                                    enable-export="true"
+                                    chart-height="390"></serial-chart>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 text-center">
+                        <ul class="nav nav-pills" style="padding-right: 0px; display: inline-block;">
+                            <li style="padding-left: 20px">
+                                <i class="fa fa-circle text-red"></i>
+                                <span>تولید</span>
+                            </li>
+                            <li>
+                                <i class="fa fa-circle" style="color: #00BBCC;"></i>
+                                <span>فروش</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+
+        <div class="col-xs-6">
+
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">تعداد هر نوع سنگ</h3>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="col-xs-12 no-padding pull-left">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <ui-select ng-model="pieChart.searchType"
+                                           theme="bootstrap"
+                                           title="نوع جستجو"
+                                           on-select="updatePieChart()">
+                                    <ui-select-match placeholder="نوع جستجو" allow-clear="true">{{$select.selected.Name}}</ui-select-match>
+                                    <ui-select-choices repeat="t in searchTypes track by $index">
+                                        <div ng-bind="t.Name" class="text-right"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                            <div class="col-xs-12" style="margin-top: 15px">
+                                <div class="col-xs-12">
+                                    <adm-dtp ng-model='pieChartDate.from'
+                                             options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                             full-data="pieChartDate.fromFull" class="english-font"
+                                             maxdate="{{pieChartDate.toFull.unix}}"
+                                             on-datechange="updatePieChart()"></adm-dtp>
+                                </div>
+                                <div class="col-xs-12 text-center form-group" style="">
+                                    <i class="fa fa-angle-down fa-2x text-muted"></i>
+                                </div>
+                                <div class="col-xs-12">
+
+                                    <adm-dtp ng-model='pieChartDate.to'
+                                             options='{calType: "jalali",dtpType:"date", format: "YYYY/MM/DD", autoClose:true}'
+                                             full-data="pieChartDate.toFull" class="english-font"
+                                             mindate="{{pieChartDate.fromFull.unix}}"
+                                             on-datechange="updatePieChart()"></adm-dtp>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <nvd3 options="options" data="data.pieChart"></nvd3>
+                </div>
+                <!-- /.box-body -->
+            </div>
+
+        </div>
+
+        <div class="col-xs-12">
+            <div class="box box-warning" style="background: #3f3f4f; color: #ffffff;">
+                <div class="box-header  ">
+                    <h3 class="box-title vazir-font">
+                        <span style="color: #eee;">تعداد هر نوع سنگ</span>
+                    </h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <stack-bar-chart
+                            chart-id="chart267"
+                            chart-data="data.StackChartData"
+                            chart-graphs="stackChartOptions"
+                            enable-scroll-bar="true"
+                            chart-height="{{data.StackChartData.length * 30}}">
+                    </stack-bar-chart>
+                    <div class="col-xs-12 text-center">
+                        <ul class="nav nav-pills" style="padding-right: 0px; display: inline-block;">
+                            <li style="padding-left: 20px">
+                                <i class="fa fa-circle" style="color: #FF6600;"></i>
+                                <span>تعداد اسلب ها ی موجود</span>
+                            </li>
+                            <li>
+                                <i class="fa fa-circle " style="color: #B0DE09"></i>
+                                <span>تعداد اسلب ها ی فروخته شده</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title vazir-font">
+                        <span>نمودار افزایشی تولید و فروش</span>
+                        <span ng-bind="'30' | pNumber"></span>
+                        <span>روز گذشته </span>
+                    </h3>
+                </div><!-- /.box-header -->
+                <div class="box-body english-ltr">
+                    <serial-chart
+                            chart-id="chart1"
+                            chart-data="data.serialChart2"
+                            chart-graphs="incrementChartOptions"
+                            enable-scroll-bar="true"
+                            enable-export="true"
+                            chart-height="300"></serial-chart>
+                    <div class="col-xs-12 text-center">
+                        <ul class="nav nav-pills" style="padding-right: 0px; display: inline-block;">
+                            <li style="padding-left: 20px">
+                                <i class="fa fa-circle text-red"></i>
+                                <span>تولید</span>
+                            </li>
+                            <li>
+                                <i class="fa fa-circle" style="color: #00BBCC;"></i>
+                                <span>فروش</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

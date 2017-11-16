@@ -36,61 +36,85 @@ class Pagination {
 	}
 
 	public function getPage($db,$query){
-		$countFroms = substr_count($query, 'FROM');
-		if($countFroms == 1){
+    $countFroms = substr_count($query, 'FROM');
+    if($countFroms == 1){
 
-			$startFromStr = strstr($query, 'FROM');
-			$countQ = $db->makeQuery("SELECT count(*) as Total ".$startFromStr);
-			$countRes = $countQ->fetch_assoc();
-			$total = $countRes['Total'];
-			$offset = ($this->PageIndex-1) * $this->PageSize;
+        $startFromStr = strstr($query, 'FROM');
+        $countQ = $db->makeQuery("SELECT count(*) as Total ".$startFromStr);
+        $countRes = $countQ->fetch_assoc();
+        $total = $countRes['Total'];
+        $offset = ($this->PageIndex-1) * $this->PageSize;
 
-			$q = $db->makeQuery($query." LIMIT $offset, $this->PageSize");
+        $q = $db->makeQuery($query." LIMIT $offset, $this->PageSize");
 
-			$items = [];
-			while($r = $q->fetch_assoc()){
-			    if(isset($r["Image"]))
+        $items = [];
+        while($r = $q->fetch_assoc()){
+            if(isset($r["Image"]))
+                $r["Image"] = base64_encode($r["Image"]);
+            $items[] = $r;
+        }
+
+        $res = [];
+        $res['Items'] = $items;
+        $res['PageSize'] = $this->PageSize;
+        $res['PageIndex'] = $this->PageIndex;
+        $res['Total'] = $total;
+
+        return $res;
+    }else{
+
+        $startFromStr = strrpos($query, 'FROM');
+        $rest = substr($query,$startFromStr);
+        $startOrderStr = strrpos($rest, 'ORDER');
+        $restOrder = substr($rest,$startOrderStr);
+        $rest = substr($rest , 0 , strlen($rest)-strlen($restOrder));
+        $countQ = $db->makeQuery("SELECT count(*) as Total ".$rest);
+        $countRes = $countQ->fetch_assoc();
+        $total = $countRes['Total'];
+
+        $offset = ($this->PageIndex-1) * $this->PageSize;
+
+        $q = $db->makeQuery($query." LIMIT $offset, $this->PageSize");
+
+        $items = [];
+        while($r = $q->fetch_assoc()){
+            $items[] = $r;
+        }
+
+        $res = [];
+        $res['Items'] = $items;
+        $res['PageSize'] = $this->PageSize;
+        $res['PageIndex'] = $this->PageIndex;
+        $res['Total'] = $total;
+
+        return $res;
+    }
+
+}
+
+    public function getPageWithHaving($db,$query , $totalQuery){
+
+            $countQ = $db->makeQuery($totalQuery);
+            $countRes = $countQ->fetch_assoc();
+            $total = $countRes['Total'];
+            $offset = ($this->PageIndex-1) * $this->PageSize;
+
+            $q = $db->makeQuery($query." LIMIT $offset, $this->PageSize");
+
+            $items = [];
+            while($r = $q->fetch_assoc()){
+                if(isset($r["Image"]))
                     $r["Image"] = base64_encode($r["Image"]);
-				$items[] = $r;
-			}
+                $items[] = $r;
+            }
+            $res = [];
+            $res['Items'] = $items;
+            $res['PageSize'] = $this->PageSize;
+            $res['PageIndex'] = $this->PageIndex;
+            $res['Total'] = $total;
 
-			$res = [];
-			$res['Items'] = $items;
-			$res['PageSize'] = $this->PageSize;
-			$res['PageIndex'] = $this->PageIndex;
-			$res['Total'] = $total;
-
-			return $res;
-		}else{
-
-			$startFromStr = strrpos($query, 'FROM');
-			$rest = substr($query,$startFromStr);
-			$startOrderStr = strrpos($rest, 'ORDER');
-			$restOrder = substr($rest,$startOrderStr);
-			$rest = substr($rest , 0 , strlen($rest)-strlen($restOrder));
-			$countQ = $db->makeQuery("SELECT count(*) as Total ".$rest);
-			$countRes = $countQ->fetch_assoc();
-			$total = $countRes['Total'];
-
-			$offset = ($this->PageIndex-1) * $this->PageSize;
-
-			$q = $db->makeQuery($query." LIMIT $offset, $this->PageSize");
-
-			$items = [];
-			while($r = $q->fetch_assoc()){
-				$items[] = $r;
-			}
-
-			$res = [];
-			$res['Items'] = $items;
-			$res['PageSize'] = $this->PageSize;
-			$res['PageIndex'] = $this->PageIndex;
-			$res['Total'] = $total;
-
-			return $res;
-		}
-
-	}
+            return $res;
+    }
 
 }
 

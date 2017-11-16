@@ -54,6 +54,7 @@ function generateRequiredCMSJavaFiles(){
     <script src="../js/toaster.js" type="text/javascript"></script>
     <script type="text/javascript" src="../js/moment.js"></script>
     <script type="text/javascript" src="../js/moment-jalaali.js"></script>
+    <script type="text/javascript" src="../js/persian-date.min.js"></script>
     <script type="text/javascript" src="../js/angular-confirm.min.js"></script>
 
     <script type="text/javascript" src="../app/directives/serial-chart-directive.js"></script>
@@ -82,6 +83,8 @@ function generateRequiredCMSCssFiles(){
 <!--    <link rel="stylesheet" href="../css/anim-in-out.css">-->
     <link rel="stylesheet" href="../css/toaster.css">
     <link rel="stylesheet" href="../cms/css/treasure-overlay-spinner.min.css">
+
+    <link rel="stylesheet" href="../js/nvd3/nvd3/nv.d3.css">
 <!--    <link rel="stylesheet" href="../cms/css/select/select.css">-->
 <!--    <link rel="stylesheet" href="../css/font-awesome-animation.min.css">-->
 <!--    <link rel="stylesheet" href="../css/hover-min.css">-->

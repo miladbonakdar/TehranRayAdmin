@@ -14,7 +14,6 @@ class Session {
 	public $AdminPermission;
 	public $AdminPermissionLevel;
 	public $SignupDate;
-	public $Image;
 
 	function __construct() {
 		if (!isset($_SESSION)) {
@@ -28,8 +27,6 @@ class Session {
 			$this->SSN = $_SESSION['SSN'];
 			$this->IsAdmin = $_SESSION['IsAdmin'];
 			$this->SignupDate = $_SESSION['SignupDate'];
-			$this->Image = $_SESSION['Image'];
-
 			if($this->IsAdmin){
 				$this->AdminPermissionLevel = $_SESSION['AdminPermissionLevel'];
 				$this->AdminPermission = $_SESSION['AdminPermission'];
@@ -42,12 +39,12 @@ class Session {
 		}
 	}
 
-	public function updateImage($value){
-		if (!isset($_SESSION)) {
-			session_start();
-		}
-		$_SESSION['Image'] = $value;
-	}
+//	public function updateImage($value){
+//		if (!isset($_SESSION)) {
+//			session_start();
+//		}
+//		$_SESSION['Image'] = $value;
+//	}
 
 	public function updateFullName($fullName){
 		if (!isset($_SESSION)) {
@@ -75,7 +72,6 @@ class Session {
 			setcookie("Email", '', $cookieTime,$cookiePath);
 			setcookie("UserID", '', $cookieTime,$cookiePath);
 			setcookie("SignupDate", '', $cookieTime,$cookiePath);
-			setcookie("Image", '',$cookieTime,$cookiePath);
 		}
 
 	    if(isSet($_SESSION['UserID']))
@@ -89,7 +85,6 @@ class Session {
 			unset($_SESSION['AdminPermission']);
 			unset($_SESSION['AdminPermissionLevel']);
 			unset($_SESSION['SignupDate']);
-			unset($_SESSION['Image']);
 			unset($_SESSION['FirstName']);
 
 			$res['Status'] = 'success';
@@ -98,7 +93,6 @@ class Session {
 	    {
 			$res['Status'] = 'error';
 	    }
-
 	    return $res;
 	}
  

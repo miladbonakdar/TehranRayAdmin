@@ -139,7 +139,7 @@ angular.module('am-charts').directive('stackBarChart', function () {
                         "dataProvider": $scope.chartData,
                         "startDuration": 1,
                         "graphs": $scope.chartGraphs,
-                        "categoryField": "OrganizationName",
+                        "categoryField": "Name",
                         "categoryAxis": {
                             "gridPosition": "start" ,
                             "gridAlpha": 0.2 ,

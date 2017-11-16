@@ -11,6 +11,8 @@
   ],
   "homepage": "https://github.com/miladbonakdar/TehranRayAdmin",
   "dependencies": {
-    "angular-nvd3": "^1.0.9"
+    "angular-nvd3": "^1.0.9",
+    "ng-csv": "^0.3.6",
+    "persian-date": "^0.1.8"
   }
 }

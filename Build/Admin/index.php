@@ -396,5 +396,8 @@
     <script src="templates.min.js"></script>
     <script src="../app/directives/auto-pagination.js"></script>
 
+    <script src="../js/nvd3/d3/d3.js"></script>
+    <script src="../js/nvd3/nvd3/nv.d3.js"></script> <!-- or use another assembly -->
+    <script src="../js/nvd3/angular-nvd3/dist/angular-nvd3.js"></script>
 </body>
 </html>
